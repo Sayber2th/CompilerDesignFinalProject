@@ -13,5 +13,26 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Lexer">
+      <UniqueIdentifier>{918d38c2-d8d3-4777-aec5-41a1cc9aebec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Parser">
+      <UniqueIdentifier>{03a9dea6-e5ec-49b7-b4b2-7bf10a143970}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AST">
+      <UniqueIdentifier>{8d4a05bb-ece2-4978-a0eb-ea94e82a72d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Semantic">
+      <UniqueIdentifier>{420ab561-5307-4d48-b2df-5c61ec48136a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IR">
+      <UniqueIdentifier>{7c5f6bec-e56d-435f-b326-ca3c215bf2a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CodeGen">
+      <UniqueIdentifier>{5d41f278-eaf8-4407-b555-5fcfa67ef069}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Driver">
+      <UniqueIdentifier>{7608517e-f782-4332-9139-56ccdf54c9b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
