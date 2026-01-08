@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstddef>
 #include <tuple>
+#include <vector>
+#include <cctype>
 
 enum TokenType 
 { 
@@ -17,13 +19,13 @@ enum TokenType
 struct Token
 {
 	TokenType type;
-	std::string value;
+	std::string lexeme;
 	std::tuple<int, int> location;
 
-	Token(TokenType t, const std::string& v, const std::tuple<int, int>& l)
+	Token(TokenType t, const std::string& le, const std::tuple<int, int>& lo)
 		: type(t)
-		, value(v)
-		, location(l)
+		, lexeme(le)
+		, location(lo)
 	{
 	}
 };
@@ -38,11 +40,19 @@ private:
 	bool isPositionAtEnd(size_t position);
 	char peekCurrent();
 	char peekNext();
-	void advancePosition();
+	void advancePosition(bool isNewline = false);
+	void updateCharLocation(bool isNewline);
 
-	bool isWhitespace(char c);
+	bool isSkippableWhitespace(char currentChar);
+	bool isNewLine(char currentChar);
+	bool isAlphabetical(char currentChar);
+
+	std::vector<Token> tokenize();
 
 public:
 	LexicalAnalyser(const std::string& src);
+
+	int lineNumber = 1;
+	int columnNumber = 1;
 
 };

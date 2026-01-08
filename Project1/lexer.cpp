@@ -42,17 +42,76 @@ char LexicalAnalyser::peekNext()
 	return '\0';
 }
 
-void LexicalAnalyser::advancePosition()
+void LexicalAnalyser::advancePosition(bool isNewline)
 {
+	updateCharLocation(isNewline);
 	position++;
 }
 
-bool LexicalAnalyser::isWhitespace(char c)
+void LexicalAnalyser::updateCharLocation(bool isNewline)
 {
-	if (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '//')
+	if (isNewline)
+	{
+		lineNumber += 1;
+		columnNumber = 1;
+	}
+	else
+	{
+		columnNumber += 1;
+	}
+}
+
+bool LexicalAnalyser::isSkippableWhitespace(char currentChar)
+{
+	if (currentChar == ' ' || currentChar == '\t' || currentChar == '\r' || currentChar == '//')
 	{
 		return true;
 	}
 
 	return false;
+}
+
+bool LexicalAnalyser::isNewLine(char currentChar)
+{
+	if (currentChar == '\n')
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool LexicalAnalyser::isAlphabetical(char currentChar)
+{
+	if ((currentChar >= 'A' && currentChar <= 'Z') || (currentChar >= 'a' && currentChar <= 'z'))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+std::vector<Token> LexicalAnalyser::tokenize()
+{
+	std::vector<Token> tokens;
+
+	while (!isAtEnd())
+	{
+		char currentChar = peekCurrent();
+
+		if (isSkippableWhitespace(currentChar))
+		{
+			advancePosition(false);
+			continue;
+		}
+		else if (isNewLine(currentChar))
+		{
+			advancePosition(true);
+			continue;
+		}
+		else
+		{
+			//....//
+		}
+	}
 }
