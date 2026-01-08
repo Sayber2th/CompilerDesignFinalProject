@@ -23,3 +23,14 @@ struct Token
 	{
 	}
 };
+
+class LexicalAnalyser
+{
+private:
+	std::string source_code;
+	size_t position;
+
+public:
+	LexicalAnalyser(const std::string& src);
+
+};

@@ -1,4 +1,5 @@
 #include "driver.h"
+#include "lexer.h"
 
 int main(int argc, char* argv[])
 {
@@ -8,6 +9,8 @@ int main(int argc, char* argv[])
 	}
 	std::string file_path = argv[1];
 	std::string file_contents = readFile(file_path);
+
+	LexicalAnalyser lexer(file_contents);
 
 	return 0;
 }
