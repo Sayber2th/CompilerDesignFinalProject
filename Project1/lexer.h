@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <cstddef>
 
 enum TokenType 
 { 
@@ -29,6 +30,12 @@ class LexicalAnalyser
 private:
 	std::string source_code;
 	size_t position;
+
+	bool isAtEnd();
+	bool isPositionAtEnd(size_t position);
+	char peekCurrent();
+	char peekNext();
+	void advancePosition();
 
 public:
 	LexicalAnalyser(const std::string& src);
