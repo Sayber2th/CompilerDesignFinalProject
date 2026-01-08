@@ -37,13 +37,12 @@ private:
 	size_t position;
 
 	bool isAtEnd();
-	bool isPositionAtEnd(size_t position);
 	char peekCurrent();
 	char peekNext();
-	void advancePosition(bool isNewline = false);
+	void advancePosition();
 	void updateCharLocation(bool isNewline);
 
-	bool isSkippableWhitespace(char currentChar);
+	bool isWhitespace(char currentChar);
 	bool isNewLine(char currentChar);
 	bool isAlphabetical(char currentChar);
 

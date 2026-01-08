@@ -4,47 +4,40 @@ LexicalAnalyser::LexicalAnalyser(const std::string& src)
 	: source_code(src)
 	, position(0)
 {
-	//Debug code; remove later
-	std::cout << "Lexer received source of size: "
-		<< source_code.size() << std::endl;
+	
 }
 
 
 bool LexicalAnalyser::isAtEnd()
-{
-	return isPositionAtEnd(position);
-}
-
-bool LexicalAnalyser::isPositionAtEnd(size_t position)
 {
 	return position >= source_code.size();
 }
 
 char LexicalAnalyser::peekCurrent()
 {
-	if (!isAtEnd())
-	{
-		return source_code[position];
-	}
+	if (position >= source_code.size()) return '\0';
 
-	//If current position is the end
-	return '\0';
+	return source_code[position];
 }
 
 char LexicalAnalyser::peekNext()
 {
-	if (!isPositionAtEnd(position+1))
-	{
-		return source_code[position + 1];
-	}
-
-	//If next position is the end
-	return '\0';
+	if (position >= source_code.size()) return '\0';
+	if (position + 1 >= source_code.size()) return '\0';
+	
+	return source_code[position + 1];
 }
 
-void LexicalAnalyser::advancePosition(bool isNewline)
+void LexicalAnalyser::advancePosition()
 {
-	updateCharLocation(isNewline);
+	if (isNewLine(peekCurrent()))
+	{
+		updateCharLocation(true);
+	}
+	else
+	{
+		updateCharLocation(false);
+	}
 	position++;
 }
 
@@ -61,9 +54,9 @@ void LexicalAnalyser::updateCharLocation(bool isNewline)
 	}
 }
 
-bool LexicalAnalyser::isSkippableWhitespace(char currentChar)
+bool LexicalAnalyser::isWhitespace(char currentChar)
 {
-	if (currentChar == ' ' || currentChar == '\t' || currentChar == '\r' || currentChar == '//')
+	if (currentChar == ' ' || currentChar == '\t' || currentChar == '\r' || currentChar == '\n')
 	{
 		return true;
 	}
@@ -99,14 +92,9 @@ std::vector<Token> LexicalAnalyser::tokenize()
 	{
 		char currentChar = peekCurrent();
 
-		if (isSkippableWhitespace(currentChar))
+		if (isWhitespace(currentChar))
 		{
-			advancePosition(false);
-			continue;
-		}
-		else if (isNewLine(currentChar))
-		{
-			advancePosition(true);
+			advancePosition();
 			continue;
 		}
 		else
