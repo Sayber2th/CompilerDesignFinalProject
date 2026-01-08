@@ -37,6 +37,8 @@ private:
 	char peekNext();
 	void advancePosition();
 
+	bool isWhitespace(char c);
+
 public:
 	LexicalAnalyser(const std::string& src);
 

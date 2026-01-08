@@ -46,3 +46,13 @@ void LexicalAnalyser::advancePosition()
 {
 	position++;
 }
+
+bool LexicalAnalyser::isWhitespace(char c)
+{
+	if (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '//')
+	{
+		return true;
+	}
+
+	return false;
+}
