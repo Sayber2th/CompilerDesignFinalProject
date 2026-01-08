@@ -39,10 +39,16 @@
     <ClCompile Include="lexer.cpp">
       <Filter>Lexer</Filter>
     </ClCompile>
+    <ClCompile Include="driver.cpp">
+      <Filter>Driver</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lexer.h">
       <Filter>Lexer</Filter>
+    </ClInclude>
+    <ClInclude Include="driver.h">
+      <Filter>Driver</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

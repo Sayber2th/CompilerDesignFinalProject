@@ -23,5 +23,3 @@ struct Token
 	{
 	}
 };
-
-std::string readFile(std::string file_name);

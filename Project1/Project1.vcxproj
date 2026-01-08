@@ -19,9 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="driver.cpp" />
     <ClCompile Include="lexer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="driver.h" />
     <ClInclude Include="lexer.h" />
   </ItemGroup>
   <ItemGroup>
