@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <cstddef>
+#include <tuple>
 
 enum TokenType 
 { 
@@ -17,10 +18,12 @@ struct Token
 {
 	TokenType type;
 	std::string value;
+	std::tuple<int, int> location;
 
-	Token(TokenType t, const std::string& v)
+	Token(TokenType t, const std::string& v, const std::tuple<int, int>& l)
 		: type(t)
 		, value(v)
+		, location(l)
 	{
 	}
 };
