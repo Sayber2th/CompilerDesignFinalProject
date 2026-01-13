@@ -1,105 +1,72 @@
 #include "lexer.h"
+#include <string>
+#include <vector>
+#include <iostream>
 
-LexicalAnalyser::LexicalAnalyser(const std::string& src)
-	: source_code(src)
-	, position(0)
+bool Lexer::isAtEnd()
 {
-	
+	return cursor >= source.size();
 }
 
-
-bool LexicalAnalyser::isAtEnd()
+char Lexer::peek(int offset)
 {
-	return position >= source_code.size();
-}
-
-char LexicalAnalyser::peekCurrent()
-{
-	if (position >= source_code.size()) return '\0';
-
-	return source_code[position];
-}
-
-char LexicalAnalyser::peekNext()
-{
-	if (position >= source_code.size()) return '\0';
-	if (position + 1 >= source_code.size()) return '\0';
-	
-	return source_code[position + 1];
-}
-
-void LexicalAnalyser::advancePosition()
-{
-	if (isNewLine(peekCurrent()))
+	if (cursor + offset >= source.size()) 
 	{
-		updateCharLocation(true);
+		return 0;
 	}
 	else
 	{
-		updateCharLocation(false);
-	}
-	position++;
-}
-
-void LexicalAnalyser::updateCharLocation(bool isNewline)
-{
-	if (isNewline)
-	{
-		lineNumber += 1;
-		columnNumber = 1;
-	}
-	else
-	{
-		columnNumber += 1;
+		return source[cursor];
 	}
 }
 
-bool LexicalAnalyser::isWhitespace(char currentChar)
+char Lexer::advance()
 {
-	if (currentChar == ' ' || currentChar == '\t' || currentChar == '\r' || currentChar == '\n')
+	if (cursor < size)
 	{
-		return true;
+		char temp = current;
+		cursor ++;
+		characterNumber ++;
 	}
 
-	return false;
+	return '\0';
 }
 
-bool LexicalAnalyser::isNewLine(char currentChar)
+void Lexer::checkAndSkipWhitespace()
 {
-	if (currentChar == '\n')
+	while (current == ' ' || current == '\t' || current == '\r')
 	{
-		return true;
+		advance();
 	}
-
-	return false;
 }
 
-bool LexicalAnalyser::isAlphabetical(char currentChar)
+void Lexer::checkAndSkipNewline()
 {
-	if ((currentChar >= 'A' && currentChar <= 'Z') || (currentChar >= 'a' && currentChar <= 'z'))
+	while (current == '\n')
 	{
-		return true;
+		lineNumber ++;
+		characterNumber = 0;
+		advance();
 	}
-
-	return false;
 }
 
-std::vector<Token> LexicalAnalyser::tokenize()
+std::vector<Token> Lexer::tokenize()
 {
+	std::cout << "Reached inside tokenize" << std::endl; //debug
 	std::vector<Token> tokens;
+	bool notEOF = true;
+	bool newLine = true;
 
 	while (!isAtEnd())
 	{
-		char currentChar = peekCurrent();
+		char current = peek(0);
 
-		if (isWhitespace(currentChar))
-		{
-			advancePosition();
-			continue;
-		}
-		else
-		{
-			//....//
-		}
+		checkAndSkipWhitespace();
+		
+		/*
+		.. implementation here .. 
+		*/
 	}
+
+	return tokens;
 }

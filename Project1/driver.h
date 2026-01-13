@@ -1,6 +1,8 @@
-#pragma once
-#include <string>
-#include <fstream>
-#include <iostream>
+#ifndef __DRIVER_H
+#define __DRIVER_H
 
-std::string readFile(std::string file_name);
+#include <string>
+
+std::string readFile(char *file_name);
+
+#endif //__DRIVER_H

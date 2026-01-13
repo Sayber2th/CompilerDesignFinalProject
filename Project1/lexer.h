@@ -1,57 +1,61 @@
-#pragma once
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <cstddef>
-#include <tuple>
-#include <vector>
-#include <cctype>
+#ifndef __LEXER_H
+#define __LEXER_H
 
-enum TokenType 
-{ 
-	IDENTIFIER, 
-	INTEGER_LITERAL, 
-	SEMICOLON, COMMA, 
-	PLUS, MINUS, STAR, SLASH,
-	UNKNOWN
+#include <string>
+#include <vector>
+
+enum TokenType
+{
+	TOKEN_IDENTIFIER,
+	TOKEN_INT,
+	TOKEN_KEYWORD,
+	TOKEN_SEMICOLON,
+	TOKEN_COMMA,
+	TOKEN_PLUS,
+	TOKEN_MINUS,
+	TOKEN_STAR,
+	TOKEN_SLASH,
+	TOKEN_IF,
+	TOKEN_EOF
 };
 
 struct Token
 {
 	TokenType type;
 	std::string lexeme;
-	std::tuple<int, int> location;
-
-	Token(TokenType t, const std::string& le, const std::tuple<int, int>& lo)
-		: type(t)
-		, lexeme(le)
-		, location(lo)
-	{
-	}
 };
 
-class LexicalAnalyser
+class Lexer
 {
-private:
-	std::string source_code;
-	size_t position;
+public:
+	Lexer(std::string sourceCode) :
+		source(sourceCode),
+		cursor(0),
+		size(sourceCode.length()),
+		current(sourceCode.at(cursor)),
+		lineNumber(1),
+		characterNumber(1)
+	{
+		
+	};
 
 	bool isAtEnd();
-	char peekCurrent();
-	char peekNext();
-	void advancePosition();
-	void updateCharLocation(bool isNewline);
+	char peek(int offset);
+	char advance();
 
-	bool isWhitespace(char currentChar);
-	bool isNewLine(char currentChar);
-	bool isAlphabetical(char currentChar);
+	//bool isWhitespace(char currentChar);
+	void checkAndSkipWhitespace();
+	void checkAndSkipNewline();
 
 	std::vector<Token> tokenize();
 
-public:
-	LexicalAnalyser(const std::string& src);
-
-	int lineNumber = 1;
-	int columnNumber = 1;
-
+private:
+	std::string source;
+	int cursor;
+	size_t size;
+	char current;
+	int lineNumber;
+	int characterNumber;
 };
+
+#endif //__LEXER_H
