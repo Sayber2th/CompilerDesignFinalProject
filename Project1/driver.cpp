@@ -15,14 +15,22 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 	
-	std::cout << "\nAttempting to read from the file: " << argv[1] << std::endl;
+	std::cout << "\nAttempting to read from the file: " << argv[1] << std::endl; //debug
 	std::string sourceCode = readFile(argv[1]);
+	sourceCode.append("\0");
 	std::cout << "\nContent of source file:" << std::endl << sourceCode << std::endl; //debug
 
 	Lexer lexer(sourceCode);
 	std::vector <Token *> tokens = lexer.tokenize();
-	std::cout << "\nList of tokens:" << std::endl;
 
+	if (tokens.back()->type != TOKEN_EOF)
+	{
+		Token* EOFToken = new Token;
+		EOFToken->type = TOKEN_EOF;
+		tokens.push_back(EOFToken);
+	}
+
+	std::cout << "\nList of tokens:" << std::endl;
 	int counter = 0;
 	for (Token* temp : tokens)
 	{

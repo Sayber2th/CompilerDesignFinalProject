@@ -161,7 +161,7 @@ std::vector<Token *> Lexer::tokenize()
 	while (cursor < size && notEOF)
 	{
 		checkAndSkipWhitespace();
-		checkAndSkipNewline();
+
 		//if token is keyword or identifier
 		if (isalpha(current) || current == '_')
 		{
@@ -178,6 +178,11 @@ std::vector<Token *> Lexer::tokenize()
 
 		switch (current)
 		{
+			case '\n':
+			{
+				checkAndSkipNewline();
+				break;
+			}
 			case ';' :
 			{
 				tokens.push_back(tokenizeSpecial(TOKEN_SEMICOLON));
@@ -258,6 +263,11 @@ std::vector<Token *> Lexer::tokenize()
 			case '}':
 			{
 				tokens.push_back(tokenizeSpecial(TOKEN_RIGHT_CURLY));
+				break;
+			}
+			case 0:
+			{
+				tokens.push_back(tokenizeSpecial(TOKEN_EOF));
 				break;
 			}
 			default :
