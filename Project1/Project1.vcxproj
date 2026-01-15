@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="lexer.cpp" />
+    <ClCompile Include="parser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="driver.h" />
     <ClInclude Include="lexer.h" />
+    <ClInclude Include="parser.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />

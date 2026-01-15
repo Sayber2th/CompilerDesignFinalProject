@@ -42,6 +42,9 @@
     <ClCompile Include="driver.cpp">
       <Filter>Driver</Filter>
     </ClCompile>
+    <ClCompile Include="parser.cpp">
+      <Filter>Parser</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lexer.h">
@@ -49,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="driver.h">
       <Filter>Driver</Filter>
+    </ClInclude>
+    <ClInclude Include="parser.h">
+      <Filter>Parser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
