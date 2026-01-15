@@ -5,6 +5,7 @@
 #include <sstream>
 #include <cctype>
 #include <cstdlib>
+#include <algorithm>
 
 char Lexer::peek(int offset)
 {
@@ -14,7 +15,7 @@ char Lexer::peek(int offset)
 	}
 	else
 	{
-		return source[cursor];
+		return source[cursor + offset];
 	}
 }
 
@@ -52,6 +53,12 @@ void Lexer::checkAndSkipNewline()
 	}
 }
 
+void Lexer::errorUnidentifiedSymbol() const
+{
+	std::cout << "[!] PARSER ERROR : Unidentified symbol: " << current << " " << "at" << " ";
+	std::cout << "Line: " << lineNumber << " " << "Character: " << characterNumber << std::endl;
+}
+
 std::string typeToString(enum TokenType type)
 {
 	switch (type)
@@ -63,6 +70,8 @@ std::string typeToString(enum TokenType type)
 	case TOKEN_SEMICOLON: return "TOKEN_SEMICOLON";
 	case TOKEN_LEFT_PAREN: return "TOKEN_LEFT_PAREN";
 	case TOKEN_RIGHT_PAREN: return "TOKEN_RIGHT_PAREN";
+	case TOKEN_LEFT_CURLY: return "TOKEN_LEFT_CURLY";
+	case TOKEN_RIGHT_CURLY: return "TOKEN_RIGHT_CURLY";
 	case TOKEN_COMMA: return "TOKEN_COMMA";
 	case TOKEN_REL_EQUALS: return "TOKEN_REL_EQUALS";
 	case TOKEN_REL_NOTEQUALS: return "TOKEN_REL_NOTEQUALS";
@@ -123,7 +132,22 @@ Token* Lexer::tokenizeSpecial(TokenType type)
 {
 	Token* newToken = new Token;
 	newToken->type = type;
-	newToken->value = std::string(1, advance());
+	bool isDoubleCharSpecial = (
+		std::find(doubleCharacterSpecials.begin(), doubleCharacterSpecials.end(), peek(-1)
+		) != doubleCharacterSpecials.end());
+	
+	if (peek(-1) != ' ' && isDoubleCharSpecial)
+	{
+		std::stringstream buffer;
+		buffer << peek(-1);
+		buffer << advance();
+
+		newToken->value = buffer.str();
+	}
+	else
+	{
+		newToken->value = std::string(1, advance());
+	}
 
 	return newToken;
 }
@@ -165,8 +189,60 @@ std::vector<Token *> Lexer::tokenize()
 			}
 			case '=':
 			{
-				tokens.push_back(tokenizeSpecial(TOKEN_EQUALS));
-				break;
+				if (peek(1) == '=')
+				{
+					advance();
+					tokens.push_back(tokenizeSpecial(TOKEN_REL_EQUALS));
+					break;
+				}
+				else
+				{
+					tokens.push_back(tokenizeSpecial(TOKEN_EQUALS));
+					break;
+				}
+			}
+			case '!':
+			{
+				if (peek(1) == '=')
+				{
+					advance();
+					tokens.push_back(tokenizeSpecial(TOKEN_REL_NOTEQUALS));
+					break;
+				}
+				else
+				{
+					advance();
+					errorUnidentifiedSymbol();
+					exit(1);
+				}
+			}
+			case '<':
+			{
+				if (peek(1) == '=')
+				{
+					advance();
+					tokens.push_back(tokenizeSpecial(TOKEN_REL_LESSTHANEQUALS));
+					break;
+				}
+				else
+				{
+					tokens.push_back(tokenizeSpecial(TOKEN_REL_LESSTHAN));
+					break;
+				}
+			}
+			case '>':
+			{
+				if (peek(1) == '=')
+				{
+					advance();
+					tokens.push_back(tokenizeSpecial(TOKEN_REL_GREATERTHANEQUALS));
+					break;
+				}
+				else
+				{
+					tokens.push_back(tokenizeSpecial(TOKEN_REL_GREATERTHAN));
+					break;
+				}
 			}
 			case '(':
 			{
@@ -178,10 +254,19 @@ std::vector<Token *> Lexer::tokenize()
 				tokens.push_back(tokenizeSpecial(TOKEN_RIGHT_PAREN));
 				break;
 			}
+			case '{':
+			{
+				tokens.push_back(tokenizeSpecial(TOKEN_LEFT_CURLY));
+				break;
+			}
+			case '}':
+			{
+				tokens.push_back(tokenizeSpecial(TOKEN_RIGHT_CURLY));
+				break;
+			}
 			default :
 			{
-				std::cout << "[!] PARSER ERROR : Unidentified symbol: " << current << " " << "at" << " ";
-				std::cout << "Line: " << lineNumber << " " << "Character: " << characterNumber << std::endl;
+				errorUnidentifiedSymbol();
 				exit(1);
 			}
 		}

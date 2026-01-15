@@ -13,6 +13,8 @@ enum TokenType
 	TOKEN_SEMICOLON,
 	TOKEN_LEFT_PAREN,
 	TOKEN_RIGHT_PAREN,
+	TOKEN_LEFT_CURLY,
+	TOKEN_RIGHT_CURLY,
 	TOKEN_COMMA,
 	TOKEN_REL_EQUALS,
 	TOKEN_REL_NOTEQUALS,
@@ -55,8 +57,10 @@ public:
 	char advance();
 	void checkAndSkipWhitespace();
 	void checkAndSkipNewline();
+	void errorUnidentifiedSymbol() const;
 
-	std::vector<std::string> keywords = {"int", "if"};
+	std::vector<std::string> keywords = {"int", "if", "else", "return", "true", "false"};
+	std::vector<char> doubleCharacterSpecials = {'!', '=', '<', '>'};
 
 	std::vector<Token *> tokenize();
 	Token* tokenizeKeywordOrIdentifier();
