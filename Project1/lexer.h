@@ -8,22 +8,34 @@ enum TokenType
 {
 	TOKEN_IDENTIFIER,
 	TOKEN_INT,
+	TOKEN_EQUALS,
 	TOKEN_KEYWORD,
 	TOKEN_SEMICOLON,
+	TOKEN_LEFT_PAREN,
+	TOKEN_RIGHT_PAREN,
 	TOKEN_COMMA,
+	TOKEN_REL_EQUALS,
+	TOKEN_REL_NOTEQUALS,
+	TOKEN_REL_LESSTHAN,
+	TOKEN_REL_LESSTHANEQUALS,
+	TOKEN_REL_GREATERTHAN,
+	TOKEN_REL_GREATERTHANEQUALS,
 	TOKEN_PLUS,
 	TOKEN_MINUS,
 	TOKEN_STAR,
 	TOKEN_SLASH,
 	TOKEN_IF,
+	TOKEN_ELSE,
 	TOKEN_EOF
 };
 
 struct Token
 {
 	TokenType type;
-	std::string lexeme;
+	std::string value;
 };
+
+std::string typeToString(enum TokenType type);
 
 class Lexer
 {
@@ -39,15 +51,17 @@ public:
 		
 	};
 
-	bool isAtEnd();
 	char peek(int offset);
 	char advance();
-
-	//bool isWhitespace(char currentChar);
 	void checkAndSkipWhitespace();
 	void checkAndSkipNewline();
 
-	std::vector<Token> tokenize();
+	std::vector<std::string> keywords = {"int", "if"};
+
+	std::vector<Token *> tokenize();
+	Token* tokenizeKeywordOrIdentifier();
+	Token* tokenizeInteger();
+	Token* tokenizeSpecial(TokenType type);
 
 private:
 	std::string source;

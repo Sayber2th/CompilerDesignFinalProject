@@ -11,17 +11,24 @@ int main(int argc, char* argv[])
 {
 	if (argc < 2) 
 	{
-		std::cerr << "Please provide the source file using the command: Project1.exe <source-file-path>";
+		std::cerr << "\nPlease provide the source file using the command: Project1.exe <source-file-path>";
 		exit(1);
 	}
 	
-	std::cout << "Attempting to read from the file: " << argv[1] << std::endl;
+	std::cout << "\nAttempting to read from the file: " << argv[1] << std::endl;
 	std::string sourceCode = readFile(argv[1]);
-	std::cout << "Got past readFile" << std::endl;
-	std::cout << "Content of source file:" << std::endl << sourceCode << std::endl; //debug
+	std::cout << "\nContent of source file:" << std::endl << sourceCode << std::endl; //debug
 
 	Lexer lexer(sourceCode);
-	std::vector <Token> tokens = lexer.tokenize();
+	std::vector <Token *> tokens = lexer.tokenize();
+	std::cout << "\nList of tokens:" << std::endl;
+
+	int counter = 0;
+	for (Token* temp : tokens)
+	{
+		counter ++;
+		std::cout << counter << ")" << "Type: " << typeToString(temp->type) << " " << "Value: " << temp->value << std::endl;
+	}
 
 	return 0;
 }
