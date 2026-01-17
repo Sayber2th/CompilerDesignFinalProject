@@ -33,8 +33,8 @@ enum TokenType
 
 struct Token
 {
-	TokenType type;
-	std::string value;
+	TokenType TYPE;
+	std::string VALUE;
 };
 
 std::string typeToString(enum TokenType type);
@@ -57,7 +57,7 @@ public:
 	char advance();
 	void checkAndSkipWhitespace();
 	void checkAndSkipNewline();
-	void errorUnidentifiedSymbol() const;
+	void raiseErrorUnidentifiedSymbol() const;
 
 	std::vector<std::string> keywords = {"int", "if", "else", "return", "true", "false"};
 	std::vector<char> doubleCharacterSpecials = {'!', '=', '<', '>'};

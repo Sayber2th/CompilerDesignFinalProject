@@ -1,11 +1,13 @@
-#include "driver.h"
-#include "lexer.h"
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <cstdlib>
+
+#include "driver.h"
+#include "lexer.h"
+#include "parser.h"
 
 int main(int argc, char* argv[])
 {
@@ -15,18 +17,18 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 	
-	std::cout << "\nAttempting to read from the file: " << argv[1] << std::endl; //debug
 	std::string sourceCode = readFile(argv[1]);
+
 	sourceCode.append("\0");
 	std::cout << "\nContent of source file:" << std::endl << sourceCode << std::endl; //debug
 
 	Lexer lexer(sourceCode);
 	std::vector <Token *> tokens = lexer.tokenize();
 
-	if (tokens.back()->type != TOKEN_EOF)
+	if (tokens.back()->TYPE != TokenType::TOKEN_EOF)
 	{
 		Token* EOFToken = new Token;
-		EOFToken->type = TOKEN_EOF;
+		EOFToken->TYPE = TokenType::TOKEN_EOF;
 		tokens.push_back(EOFToken);
 	}
 
@@ -35,8 +37,13 @@ int main(int argc, char* argv[])
 	for (Token* temp : tokens)
 	{
 		counter ++;
-		std::cout << counter << ")" << "Type: " << typeToString(temp->type) << " " << "Value: " << temp->value << std::endl;
+		std::cout << counter << ")" << "Type: " << typeToString(temp->TYPE) << " " << "Value: " << temp->VALUE << std::endl;
 	}
+
+	Parser parser(tokens);
+
+	AST_Node* ROOT = parser.parse();
+	std::cout << "\nNumber of statements: " << ROOT->SUB_STATEMENTS.size() << std::endl;
 
 	return 0;
 }
@@ -49,7 +56,7 @@ std::string readFile(char *file_name)
 
 	if (!sourceFileStream)
 	{
-		std::cout << "No such file found; please ensure provide a valid file path." << std::endl;
+		std::cout << "\nNo such file found; please ensure provide a valid file path." << std::endl;
 		exit(1);
 	}
 

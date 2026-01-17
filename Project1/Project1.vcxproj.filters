@@ -59,5 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="test.txt" />
+    <Text Include="ContextFreeGrammar.txt" />
   </ItemGroup>
 </Project>

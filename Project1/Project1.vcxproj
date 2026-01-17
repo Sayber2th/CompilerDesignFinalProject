@@ -29,6 +29,7 @@
     <ClInclude Include="parser.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="ContextFreeGrammar.txt" />
     <Text Include="test.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

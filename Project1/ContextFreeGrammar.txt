@@ -1,0 +1,11 @@
+Nova CFG
+
+<source> -> <statement>*
+<statement> -> <declaration> ; | <assignment> ; | RETURN <expression> ; | PRINT <expression> ;
+<declaration> -> <keyword> <id> = <expression>
+<assignment> -> <id> = <expression>
+<id> -> <alnum>
+<alnum> -> (_ + <letter>)^+ (<letter>^* <number>^*)^*
+<letter> -> a|b|c|...|z
+<number> -> 
+<expression> -> int
