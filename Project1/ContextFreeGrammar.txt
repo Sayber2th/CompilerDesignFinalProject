@@ -1,4 +1,5 @@
-Nova CFG
+﻿Nova CFG
+ε
 
 <source> -> <statement>*
 <statement> -> <declaration> ; | <assignment> ; | RETURN <expression> ; | PRINT <expression> ;
@@ -9,3 +10,6 @@ Nova CFG
 <letter> -> a|b|c|...|z
 <number> -> 
 <expression> -> int
+
+<syntax> -> <production> <syntax> | ε
+<production> -> <identifier> "=" <expression>

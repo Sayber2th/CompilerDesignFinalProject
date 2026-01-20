@@ -69,7 +69,7 @@ public:
 
 private:
 	std::string source;
-	int cursor;
+	size_t cursor;
 	size_t size;
 	char current;
 	int lineNumber;
