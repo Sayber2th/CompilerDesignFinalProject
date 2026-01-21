@@ -1,79 +1,79 @@
-#ifndef __LEXER_H
-#define __LEXER_H
+#ifndef LEXER_H
+#define LEXER_H
 
 #include <string>
 #include <vector>
 
-enum TokenType
+enum token_type : std::uint8_t
 {
-	TOKEN_IDENTIFIER,
-	TOKEN_INT,
-	TOKEN_EQUALS,
-	TOKEN_KEYWORD,
-	TOKEN_SEMICOLON,
-	TOKEN_LEFT_PAREN,
-	TOKEN_RIGHT_PAREN,
-	TOKEN_LEFT_CURLY,
-	TOKEN_RIGHT_CURLY,
-	TOKEN_COMMA,
-	TOKEN_REL_EQUALS,
-	TOKEN_REL_NOTEQUALS,
-	TOKEN_REL_LESSTHAN,
-	TOKEN_REL_LESSTHANEQUALS,
-	TOKEN_REL_GREATERTHAN,
-	TOKEN_REL_GREATERTHANEQUALS,
-	TOKEN_PLUS,
-	TOKEN_MINUS,
-	TOKEN_STAR,
-	TOKEN_SLASH,
-	TOKEN_IF,
-	TOKEN_ELSE,
-	TOKEN_EOF
+	token_identifier,
+	token_int,
+	token_equals,
+	token_keyword,
+	token_semicolon,
+	token_left_paren,
+	token_right_paren,
+	token_left_curly,
+	token_right_curly,
+	token_comma,
+	token_rel_equals,
+	token_rel_notequals,
+	token_rel_lessthan,
+	token_rel_lessthanequals,
+	token_rel_greaterthan,
+	token_rel_greaterthanequals,
+	token_plus,
+	token_minus,
+	token_star,
+	token_slash,
+	token_if,
+	token_else,
+	token_eof
 };
 
-struct Token
+struct token
 {
-	TokenType TYPE;
-	std::string VALUE;
+	token_type type;
+	std::string value;
 };
 
-std::string typeToString(enum TokenType type);
+std::string type_to_string(enum token_type type);
 
-class Lexer
+class lexer
 {
 public:
-	Lexer(std::string sourceCode) :
-		source(sourceCode),
-		cursor(0),
-		size(sourceCode.length()),
-		current(sourceCode.at(cursor)),
-		lineNumber(1),
-		characterNumber(1)
+	explicit lexer(const std::string& source_code) :
+		source_(source_code),
+		cursor_(0),
+		size_(source_code.length()),
+		current_(source_code.at(cursor_)),
+		line_number_(1),
+		character_number_(1)
 	{
 		
-	};
+	}
 
-	char peek(int offset);
+	[[nodiscard]] char peek(int offset) const;
 	char advance();
-	void checkAndSkipWhitespace();
-	void checkAndSkipNewline();
-	void raiseErrorUnidentifiedSymbol() const;
+	void check_and_skip_whitespace();
+	void check_and_skip_newline();
+	void raise_error_unidentified_symbol() const;
 
 	std::vector<std::string> keywords = {"int", "if", "else", "return", "true", "false"};
-	std::vector<char> doubleCharacterSpecials = {'!', '=', '<', '>'};
+	std::vector<char> double_character_specials = {'!', '=', '<', '>'};
 
-	std::vector<Token *> tokenize();
-	Token* tokenizeKeywordOrIdentifier();
-	Token* tokenizeInteger();
-	Token* tokenizeSpecial(TokenType type);
+	std::vector<token *> tokenize();
+	token* tokenize_keyword_or_identifier();
+	token* tokenize_integer();
+	token* tokenize_special(token_type type);
 
 private:
-	std::string source;
-	size_t cursor;
-	size_t size;
-	char current;
-	int lineNumber;
-	int characterNumber;
+	std::string source_;
+	size_t cursor_;
+	size_t size_;
+	char current_;
+	int line_number_;
+	int character_number_;
 };
 
-#endif //__LEXER_H
+#endif //LEXER_H

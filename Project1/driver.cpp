@@ -9,7 +9,7 @@
 #include "lexer.h"
 #include "parser.h"
 
-int main(int argc, char* argv[])
+int main(const int argc, char* argv[])
 {
 	if (argc < 2) 
 	{
@@ -17,50 +17,50 @@ int main(int argc, char* argv[])
 		exit(1);
 	}
 	
-	std::string sourceCode = readFile(argv[1]);
+	std::string source_code = read_file(argv[1]);
 
-	sourceCode.append("\0");
-	std::cout << "\nContent of source file:" << std::endl << sourceCode << std::endl; //debug
+	source_code.append("\0");
+	std::cout << "\nContent of source file:" << '\n' << source_code << '\n'; //debug
 
-	Lexer lexer(sourceCode);
-	std::vector <Token *> tokens = lexer.tokenize();
+	lexer lexer(source_code);
+	std::vector <token *> tokens = lexer.tokenize();
 
-	if (tokens.back()->TYPE != TokenType::TOKEN_EOF)
+	if (tokens.back()->type != token_eof)
 	{
-		Token* EOFToken = new Token;
-		EOFToken->TYPE = TokenType::TOKEN_EOF;
-		tokens.push_back(EOFToken);
+		const auto eof_token = new token;
+		eof_token->type = token_eof;
+		tokens.push_back(eof_token);
 	}
 
-	std::cout << "\nList of tokens:" << std::endl;
+	std::cout << "\nList of tokens:" << '\n';
 	int counter = 0;
-	for (Token* temp : tokens)
+	for (const token* temp : tokens)
 	{
 		counter ++;
-		std::cout << counter << ")" << "Type: " << typeToString(temp->TYPE) << " " << "Value: " << temp->VALUE << std::endl;
+		std::cout << counter << ")" << "Type: " << type_to_string(temp->type) << " " << "Value: " << temp->value << '\n';
 	}
 
-	Parser parser(tokens);
+	parser parser(tokens);
 
-	AST_Node* ROOT = parser.parse();
-	std::cout << "\nNumber of statements: " << ROOT->SUB_STATEMENTS.size() << std::endl;
+	const ast_node* root = parser.parse();
+	std::cout << "\nNumber of statements: " << root->sub_statements.size() << '\n';
 
 	return 0;
 }
 
-std::string readFile(char *file_name)
+std::string read_file(const char *file_name)
 {
-	std::ifstream sourceFileStream(file_name);
+	std::ifstream source_file_stream(file_name);
 	std::stringstream buffer;
 	char temp;
 
-	if (!sourceFileStream)
+	if (!source_file_stream)
 	{
-		std::cout << "\nNo such file found; please ensure provide a valid file path." << std::endl;
+		std::cout << "\nNo such file found; please ensure provide a valid file path." << '\n';
 		exit(1);
 	}
 
-	while (sourceFileStream.get(temp))
+	while (source_file_stream.get(temp))
 	{
 		buffer << temp;
 	}

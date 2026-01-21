@@ -7,26 +7,26 @@
 #include <cstdlib>
 #include <algorithm>
 
-char Lexer::peek(int offset)
+char lexer::peek(const int offset) const
 {
-	if (cursor + offset >= source.size()) 
+	if (cursor_ + offset >= source_.size()) 
 	{
 		return 0;
 	}
 	else
 	{
-		return source[cursor + offset];
+		return source_[cursor_ + offset];
 	}
 }
 
-char Lexer::advance()
+char lexer::advance()
 {
-	if (cursor < size)
+	if (cursor_ < size_)
 	{
-		char temp = current;
-		cursor ++;
-		characterNumber ++;
-		current = (cursor < size) ? source[cursor] : '\0';
+		const char temp = current_;
+		cursor_ ++;
+		character_number_ ++;
+		current_ = (cursor_ < size_) ? source_[cursor_] : '\0';
 		return temp;
 	}
 	else
@@ -35,157 +35,156 @@ char Lexer::advance()
 	}
 }
 
-void Lexer::checkAndSkipWhitespace()
+void lexer::check_and_skip_whitespace()
 {
-	while (current == ' ' || current == '\t' || current == '\r')
+	while (current_ == ' ' || current_ == '\t' || current_ == '\r')
 	{
 		advance();
 	}
 }
 
-void Lexer::checkAndSkipNewline()
+void lexer::check_and_skip_newline()
 {
-	while (current == '\n')
+	while (current_ == '\n')
 	{
-		lineNumber ++;
-		characterNumber = 0;
+		line_number_ ++;
+		character_number_ = 0;
 		advance();
 	}
 }
 
-void Lexer::raiseErrorUnidentifiedSymbol() const
+void lexer::raise_error_unidentified_symbol() const
 {
-	std::cout << "[!] LEXER ERROR : Unidentified symbol: " << current << " " << "at" << " ";
-	std::cout << "Line: " << lineNumber << " " << "Character: " << characterNumber << std::endl;
+	std::cout << "[!] LEXER ERROR : Unidentified symbol: " << current_ << " " << "at" << " ";
+	std::cout << "Line: " << line_number_ << " " << "Character: " << character_number_ << '\n';
 }
 
-std::string typeToString(enum TokenType type)
+std::string type_to_string(const enum token_type type)
 {
 	switch (type)
 	{
-	case TOKEN_IDENTIFIER: return "TOKEN_IDENTIFIER";
-	case TOKEN_INT: return "TOKEN_INT";
-	case TOKEN_EQUALS: return "TOKEN_EQUALS";
-	case TOKEN_KEYWORD: return "TOKEN_KEYWORD";
-	case TOKEN_SEMICOLON: return "TOKEN_SEMICOLON";
-	case TOKEN_LEFT_PAREN: return "TOKEN_LEFT_PAREN";
-	case TOKEN_RIGHT_PAREN: return "TOKEN_RIGHT_PAREN";
-	case TOKEN_LEFT_CURLY: return "TOKEN_LEFT_CURLY";
-	case TOKEN_RIGHT_CURLY: return "TOKEN_RIGHT_CURLY";
-	case TOKEN_COMMA: return "TOKEN_COMMA";
-	case TOKEN_REL_EQUALS: return "TOKEN_REL_EQUALS";
-	case TOKEN_REL_NOTEQUALS: return "TOKEN_REL_NOTEQUALS";
-	case TOKEN_REL_LESSTHAN: return "TOKEN_REL_LESSTHAN";
-	case TOKEN_REL_LESSTHANEQUALS: return "TOKEN_REL_LESSTHANEQUALS";
-	case TOKEN_REL_GREATERTHAN: return "TOKEN_REL_GREATERTHAN";
-	case TOKEN_REL_GREATERTHANEQUALS: return "TOKEN_REL_GREATERTHANEQUALS";
-	case TOKEN_PLUS: return "TOKEN_PLUS";
-	case TOKEN_MINUS: return "TOKEN_MINUS";
-	case TOKEN_STAR: return "TOKEN_STAR";
-	case TOKEN_SLASH: return "TOKEN_SLASH";
-	case TOKEN_IF: return "TOKEN_IF";
-	case TOKEN_ELSE: return "TOKEN_ELSE";
-	case TOKEN_EOF: return "TOKEN_EOF";
-	default: return "UNRECOGNIZED TOKEN";
+	case token_identifier: return "TOKEN_IDENTIFIER";
+	case token_int: return "TOKEN_INT";
+	case token_equals: return "TOKEN_EQUALS";
+	case token_keyword: return "TOKEN_KEYWORD";
+	case token_semicolon: return "TOKEN_SEMICOLON";
+	case token_left_paren: return "TOKEN_LEFT_PAREN";
+	case token_right_paren: return "TOKEN_RIGHT_PAREN";
+	case token_left_curly: return "TOKEN_LEFT_CURLY";
+	case token_right_curly: return "TOKEN_RIGHT_CURLY";
+	case token_comma: return "TOKEN_COMMA";
+	case token_rel_equals: return "TOKEN_REL_EQUALS";
+	case token_rel_notequals: return "TOKEN_REL_NOTEQUALS";
+	case token_rel_lessthan: return "TOKEN_REL_LESSTHAN";
+	case token_rel_lessthanequals: return "TOKEN_REL_LESSTHANEQUALS";
+	case token_rel_greaterthan: return "TOKEN_REL_GREATERTHAN";
+	case token_rel_greaterthanequals: return "TOKEN_REL_GREATERTHANEQUALS";
+	case token_plus: return "TOKEN_PLUS";
+	case token_minus: return "TOKEN_MINUS";
+	case token_star: return "TOKEN_STAR";
+	case token_slash: return "TOKEN_SLASH";
+	case token_if: return "TOKEN_IF";
+	case token_else: return "TOKEN_ELSE";
+	case token_eof: return "TOKEN_EOF";
+	default: return "UNRECOGNIZED TOKEN";  // NOLINT(clang-diagnostic-covered-switch-default)
 	}
 }
 
-Token* Lexer::tokenizeKeywordOrIdentifier()
+token* lexer::tokenize_keyword_or_identifier()
 {
 	std::stringstream buffer;
 	buffer << advance();
 
-	while (isalpha(current) || current == '_')
+	while (isalpha(current_) || current_ == '_')
 	{
 		buffer << advance();
 	}
 
-	Token* newToken = new Token();
+	const auto new_token = new token();
 
-	newToken->VALUE = buffer.str();
-	newToken->TYPE = (
-		std::find(keywords.begin(), keywords.end(), newToken->VALUE) != keywords.end()
-		) ? TokenType::TOKEN_KEYWORD : TokenType::TOKEN_IDENTIFIER;
+	new_token->value = buffer.str();
+	new_token->type = (
+		std::ranges::find(keywords, new_token->value) != keywords.end()
+		) ? token_keyword : token_identifier;
 
-	return newToken;
+	return new_token;
 }
 
-Token* Lexer::tokenizeInteger()
+token* lexer::tokenize_integer()
 {
 	std::stringstream buffer;
 	buffer << advance();
 
-	while (isdigit(current))
+	while (isdigit(current_))
 	{
 		buffer << advance();
 	}
 
-	Token* newToken = new Token();
+	const auto new_token = new token();
 
-	newToken->TYPE = TokenType::TOKEN_INT;
-	newToken->VALUE = buffer.str();
+	new_token->type = token_int;
+	new_token->value = buffer.str();
 
-	return newToken;
+	return new_token;
 }
 
-Token* Lexer::tokenizeSpecial(TokenType type)
+token* lexer::tokenize_special(const token_type type)
 {
-	Token* newToken = new Token;
-	newToken->TYPE = type;
-	bool isDoubleCharSpecial = (
-		std::find(doubleCharacterSpecials.begin(), doubleCharacterSpecials.end(), peek(-1)
-		) != doubleCharacterSpecials.end());
+	const auto new_token = new token;
+	new_token->type = type;
+	const bool is_double_char_special = (
+		std::ranges::find(double_character_specials, peek(-1)
+		) != double_character_specials.end());
 	
-	if (peek(-1) != ' ' && isDoubleCharSpecial)
+	if (peek(-1) != ' ' && is_double_char_special)
 	{
 		std::stringstream buffer;
 		buffer << peek(-1);
 		buffer << advance();
 
-		newToken->VALUE = buffer.str();
+		new_token->value = buffer.str();
 	}
 	else
 	{
-		newToken->VALUE = std::string(1, advance());
+		new_token->value = std::string(1, advance());
 	}
 
-	return newToken;
+	return new_token;
 }
 
-std::vector<Token *> Lexer::tokenize()
+std::vector<token *> lexer::tokenize()
 {
-	std::vector<Token *> tokens;
-	bool notEOF = true;
-	bool doDebugCheck = true;
+	std::vector<token *> tokens;
+	bool is_eof = false;
 
-	while (cursor < size && notEOF)
+	while (!is_eof && cursor_ < size_)
 	{
-		checkAndSkipWhitespace();
+		check_and_skip_whitespace();
 
 		//if token is keyword or identifier
-		if (isalpha(current) || current == '_')
+		if (isalpha(current_) || current_ == '_')
 		{
-			tokens.push_back(tokenizeKeywordOrIdentifier());
+			tokens.push_back(tokenize_keyword_or_identifier());
 			continue;
 		}
 		
 		//if token is integer
-		if (isdigit(current))
+		if (isdigit(current_))
 		{
-			tokens.push_back(tokenizeInteger());
+			tokens.push_back(tokenize_integer());
 			continue;
 		}
 
-		switch (current)
+		switch (current_)
 		{
 			case '\n':
 			{
-				checkAndSkipNewline();
+				check_and_skip_newline();
 				break;
 			}
 			case ';' :
 			{
-				tokens.push_back(tokenizeSpecial(TokenType::TOKEN_SEMICOLON));
+				tokens.push_back(tokenize_special(token_semicolon));
 				break;
 			}
 			case '=':
@@ -193,12 +192,12 @@ std::vector<Token *> Lexer::tokenize()
 				if (peek(1) == '=')
 				{
 					advance();
-					tokens.push_back(tokenizeSpecial(TokenType::TOKEN_REL_EQUALS));
+					tokens.push_back(tokenize_special(token_rel_equals));
 					break;
 				}
 				else
 				{
-					tokens.push_back(tokenizeSpecial(TokenType::TOKEN_EQUALS));
+					tokens.push_back(tokenize_special(token_equals));
 					break;
 				}
 			}
@@ -207,13 +206,13 @@ std::vector<Token *> Lexer::tokenize()
 				if (peek(1) == '=')
 				{
 					advance();
-					tokens.push_back(tokenizeSpecial(TokenType::TOKEN_REL_NOTEQUALS));
+					tokens.push_back(tokenize_special(token_rel_notequals));
 					break;
 				}
 				else
 				{
 					advance();
-					raiseErrorUnidentifiedSymbol();
+					raise_error_unidentified_symbol();
 					exit(1);
 				}
 			}
@@ -222,12 +221,12 @@ std::vector<Token *> Lexer::tokenize()
 				if (peek(1) == '=')
 				{
 					advance();
-					tokens.push_back(tokenizeSpecial(TokenType::TOKEN_REL_LESSTHANEQUALS));
+					tokens.push_back(tokenize_special(token_rel_lessthanequals));
 					break;
 				}
 				else
 				{
-					tokens.push_back(tokenizeSpecial(TokenType::TOKEN_REL_LESSTHAN));
+					tokens.push_back(tokenize_special(token_rel_lessthan));
 					break;
 				}
 			}
@@ -236,43 +235,44 @@ std::vector<Token *> Lexer::tokenize()
 				if (peek(1) == '=')
 				{
 					advance();
-					tokens.push_back(tokenizeSpecial(TokenType::TOKEN_REL_GREATERTHANEQUALS));
+					tokens.push_back(tokenize_special(token_rel_greaterthanequals));
 					break;
 				}
 				else
 				{
-					tokens.push_back(tokenizeSpecial(TokenType::TOKEN_REL_GREATERTHAN));
+					tokens.push_back(tokenize_special(token_rel_greaterthan));
 					break;
 				}
 			}
 			case '(':
 			{
-				tokens.push_back(tokenizeSpecial(TokenType::TOKEN_LEFT_PAREN));
+				tokens.push_back(tokenize_special(token_left_paren));
 				break;
 			}
 			case ')':
 			{
-				tokens.push_back(tokenizeSpecial(TokenType::TOKEN_RIGHT_PAREN));
+				tokens.push_back(tokenize_special(token_right_paren));
 				break;
 			}
 			case '{':
 			{
-				tokens.push_back(tokenizeSpecial(TokenType::TOKEN_LEFT_CURLY));
+				tokens.push_back(tokenize_special(token_left_curly));
 				break;
 			}
 			case '}':
 			{
-				tokens.push_back(tokenizeSpecial(TokenType::TOKEN_RIGHT_CURLY));
+				tokens.push_back(tokenize_special(token_right_curly));
 				break;
 			}
 			case 0:
 			{
-				tokens.push_back(tokenizeSpecial(TokenType::TOKEN_EOF));
+				tokens.push_back(tokenize_special(token_eof));
+				is_eof = true;	
 				break;
 			}
 			default :
 			{
-				raiseErrorUnidentifiedSymbol();
+				raise_error_unidentified_symbol();
 				exit(1);
 			}
 		}

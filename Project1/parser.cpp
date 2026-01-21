@@ -5,150 +5,139 @@
 #include <string>
 
 //improve the formatting for this function later
-void Parser::raiseErrorSyntax(TokenType tokenType, std::string tokenValue)
+void parser::raise_error_syntax(const token_type token_type, const std::string& token_value)
 {
-	std::cerr << "[!] SYNTAX ERROR " << typeToString(tokenType) << " " << tokenValue << std::endl;
+	std::cerr << "[!] SYNTAX ERROR " << type_to_string(token_type) << " " << token_value << '\n';
 }
 
-Token* Parser::proceed(enum TokenType TYPE)
+token* parser::proceed(const enum token_type type)
 {
-	//std::cout << "called proceed" << std::endl; //debug
-	if (current->TYPE != TYPE)
+	if (current_->type != type)
 	{
-		raiseErrorSyntax(current->TYPE, current->VALUE);
+		raise_error_syntax(current_->type, current_->value);
 		exit(1);
 	}
 	else
 	{
-		index ++;
-		current = parserTokens.at(index);
-		return current;
+		index_ ++;
+		current_ = parser_tokens_.at(index_);
+		return current_;
 	}
 }
 
-AST_Node* Parser::parseIdentifier()
+ast_node* parser::parse_identifier()
 {
-	//std::cout << "called parseidentifier" << std::endl; //debug
-	std::string* buffer = &current->VALUE;
-	proceed(TokenType::TOKEN_IDENTIFIER);
-	proceed(TokenType::TOKEN_EQUALS);
+	proceed(token_identifier);
+	proceed(token_equals);
 
-	AST_Node* newNode = new AST_Node;
-	newNode->TYPE = NodeType::NODE_VARIABLE;
-	newNode->CHILD = parseInteger();
+	const auto new_node = new ast_node;
+	new_node->type = node_variable;
+	new_node->child = parse_integer();
 
-	return newNode;
+	return new_node;
 }
 
-AST_Node* Parser::parseKeyword()
+ast_node* parser::parse_keyword()
 {
-	//std::cout << "called parsekeyword" << std::endl; //debug
-	if (current->VALUE == "int")
+	if (current_->value == "int")
 	{
-		return parseKeywordInt();
+		return parse_keyword_int();
 	}
-	else if (current->VALUE == "return")
+	else if (current_->value == "return")
 	{
-		return parseKeywordReturn();
+		return parse_keyword_return();
 	}
-	else if (current->VALUE == "print")
+	else if (current_->value == "print")
 	{
-		return parseKeywordPrint();
+		return parse_keyword_print();
 	}
 	else
 	{
-		raiseErrorSyntax(current->TYPE, current->VALUE);
+		raise_error_syntax(current_->type, current_->value);
 		exit(1);
 	}
 }
 
-AST_Node* Parser::parseInteger()
+ast_node* parser::parse_integer()
 {
-	//std::cout << "called parseinteger" << std::endl; //debug
-	if (current->TYPE != TokenType::TOKEN_INT)
+	if (current_->type != token_int)
 	{
-		raiseErrorSyntax(current->TYPE, current->VALUE);
+		raise_error_syntax(current_->type, current_->value);
 		exit(1);
 	}
 
-	AST_Node* newNode = new AST_Node;
-	newNode->TYPE = NodeType::NODE_INT;
-	newNode->VALUE = &current->VALUE;
-	proceed(TokenType::TOKEN_INT);
+	const auto new_node = new ast_node;
+	new_node->type = node_int;
+	new_node->value = &current_->value;
+	proceed(token_int);
 
-	return newNode;
+	return new_node;
 }
 
-AST_Node* Parser::parseKeywordInt()
+ast_node* parser::parse_keyword_int()
 {
-	//std::cout << "called parsekeywordint" << std::endl; //debug
-	proceed(TokenType::TOKEN_KEYWORD);
+	proceed(token_keyword);
 
-	AST_Node* newNode = new AST_Node;
-	newNode->TYPE = NodeType::NODE_KEYWORD_INT;
-	newNode->CHILD = parseIdentifier();
+	const auto new_node = new ast_node;
+	new_node->type = node_keyword_int;
+	new_node->child = parse_identifier();
 
-	return newNode;
+	return new_node;
 }
 
-AST_Node* Parser::parseKeywordReturn()
+ast_node* parser::parse_keyword_return()
 {
-	//std::cout << "called parsekeywordreturn" << std::endl; //debug
-	proceed(TokenType::TOKEN_KEYWORD);
+	proceed(token_keyword);
 
-	AST_Node* newNode = new AST_Node;
-	newNode->TYPE = NodeType::NODE_RETURN;
-	newNode->CHILD = parseInteger();
+	const auto new_node = new ast_node;
+	new_node->type = node_return;
+	new_node->child = parse_integer();
 
-	return newNode;
+	return new_node;
 }
 
-AST_Node* Parser::parseKeywordPrint()
+ast_node* parser::parse_keyword_print()
 {
-	//std::cout << "called parsekeywordprint" << std::endl; //debug
-	proceed(TokenType::TOKEN_KEYWORD);
+	proceed(token_keyword);
 
-	AST_Node* newNode = new AST_Node;
-	newNode->TYPE = NodeType::NODE_PRINT;
-	proceed(TokenType::TOKEN_LEFT_PAREN);
-	newNode->CHILD = parseInteger();
-	proceed(TokenType::TOKEN_RIGHT_PAREN);
+	const auto new_node = new ast_node;
+	new_node->type = node_print;
+	proceed(token_left_paren);
+	new_node->child = parse_integer();
+	proceed(token_right_paren);
 
-	return newNode;
+	return new_node;
 }
 
-AST_Node* Parser::parse()
+ast_node* parser::parse()
 {
 	//std::cout << "parse called" << std::endl; //debug
-	AST_Node* ROOT = new AST_Node();
-	ROOT->TYPE = NodeType::NODE_ROOT;
+	const auto root = new ast_node();
+	root->type = node_root;
 
-	while (current->TYPE != TokenType::TOKEN_EOF)
+	while (current_->type != token_eof)
 	{
-		//std::cout << "inside while loop of parse" << std::endl; //debug
-		switch (current->TYPE)
+		switch (current_->type)  // NOLINT(clang-diagnostic-switch-enum)
 		{
-			case TokenType::TOKEN_KEYWORD:
+			case token_keyword:
 			{
-				//std::cout << "case keyword token" << std::endl; //debug
-				ROOT->SUB_STATEMENTS.push_back(parseKeyword());
+				root->sub_statements.push_back(parse_keyword());
 				break;
 			}
-			case TokenType::TOKEN_IDENTIFIER :
+			case token_identifier :
 			{
-				//std::cout << "case keyword identifier" << std::endl; //debug
-				ROOT->SUB_STATEMENTS.push_back(parseIdentifier());
+				root->sub_statements.push_back(parse_identifier());
 				break;
 			}
 			default :
 			{
-				raiseErrorSyntax(current->TYPE, current->VALUE);
+				raise_error_syntax(current_->type, current_->value);
 				exit(1);
 			}
 		}
 
-		proceed(TokenType::TOKEN_SEMICOLON);
+		proceed(token_semicolon);
 	}
 
-	return ROOT;
+	return root;
 }

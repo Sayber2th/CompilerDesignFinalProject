@@ -1,37 +1,37 @@
-#ifndef __PARSER_H
-#define __PARSER_H
+#ifndef PARSER_H
+#define PARSER_H
 
 #include "lexer.h"
 #include <vector>
 #include <string>
 
-enum NodeType
+enum node_type : std::uint8_t
 {
-	NODE_ROOT,
-	NODE_RETURN,
-	NODE_PRINT,
-	NODE_INT,
-	NODE_IDENTIFIER,
-	NODE_VARIABLE,
-	NODE_KEYWORD_INT
+	node_root,
+	node_return,
+	node_print,
+	node_int,
+	node_identifier,
+	node_variable,
+	node_keyword_int
 };
 
-struct AST_Node
+struct ast_node
 {
-	enum NodeType TYPE;
-	std::string* VALUE;
-	AST_Node* CHILD;
-	std::vector<AST_Node*> SUB_STATEMENTS;
+	enum node_type type;
+	std::string* value;
+	ast_node* child;
+	std::vector<ast_node*> sub_statements;
 };
 
-class Parser
+class parser
 {
 public:
-	Parser(std::vector<Token*> tokens) :
-		parserTokens(tokens),
-		index(0),
-		limit(parserTokens.size()),
-		current(parserTokens.at(index))
+	explicit parser(const std::vector<token*>& tokens) :
+		parser_tokens_(tokens),
+		index_(0),
+		limit_(parser_tokens_.size()),
+		current_(parser_tokens_.at(index_))
 	{
 		/*parserTokens = tokens;
 		index = 0;
@@ -39,21 +39,21 @@ public:
 		current = parserTokens.at(index);*/
 	}
 
-	void raiseErrorSyntax(TokenType tokenType, std::string tokenValue); //improve the formatting for this later
-	Token* proceed(enum TokenType TYPE);
-	AST_Node* parseIdentifier();
-	AST_Node* parseKeyword();
-	AST_Node* parseInteger();
-	AST_Node* parseKeywordInt();
-	AST_Node* parseKeywordReturn();
-	AST_Node* parseKeywordPrint();
-	AST_Node* parse();
+	static void raise_error_syntax(token_type token_type, const std::string& token_value); //improve the formatting for this later
+	token* proceed(enum token_type type);
+	ast_node* parse_identifier();
+	ast_node* parse_keyword();
+	ast_node* parse_integer();
+	ast_node* parse_keyword_int();
+	ast_node* parse_keyword_return();
+	ast_node* parse_keyword_print();
+	ast_node* parse();
 
 private:
-	std::vector<Token*> parserTokens;
-	size_t index;
-	size_t limit;
-	Token* current;
+	std::vector<token*> parser_tokens_;
+	size_t index_;
+	size_t limit_;
+	token* current_;
 };
 
-#endif // !__PARSER_H
+#endif // !PARSER_H
