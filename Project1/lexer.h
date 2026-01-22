@@ -39,7 +39,7 @@ struct token
 	std::string value;
 };
 
-std::string type_to_string(enum token_type type);
+std::string token_type_to_string(enum token_type type);
 
 class lexer
 {

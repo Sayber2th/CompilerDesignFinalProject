@@ -59,7 +59,7 @@ void lexer::raise_error_unidentified_symbol() const
 	std::cout << "Line: " << line_number_ << " " << "Character: " << character_number_ << '\n';
 }
 
-std::string type_to_string(const enum token_type type)
+std::string token_type_to_string(const enum token_type type)
 {
 	switch (type)
 	{

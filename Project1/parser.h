@@ -21,10 +21,12 @@ enum node_type : std::uint8_t
 struct ast_node
 {
 	enum node_type type;
-	std::string* value;
+	std::string* value = nullptr;
 	ast_node* child;
 	std::vector<ast_node*> sub_statements;
 };
+
+std::string node_type_to_string(enum node_type type);
 
 class parser
 {

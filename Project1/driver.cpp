@@ -33,18 +33,29 @@ int main(const int argc, char* argv[])
 	}
 
 	std::cout << "\nList of tokens:" << '\n';
-	int counter = 0;
+	int counter_tokens = 0;
 	for (const token* temp : tokens)
 	{
-		counter ++;
-		std::cout << counter << ")" << "Type: " << type_to_string(temp->type) << " " << "Value: " << temp->value << '\n';
+		counter_tokens ++;
+		std::cout << counter_tokens << ")" << "Type: " << token_type_to_string(temp->type) << " " << "Value: " << temp->value << '\n';
 	}
 
 	parser parser(tokens);
-
 	const ast_node* root = parser.parse();
+	
 	std::cout << "\nNumber of statements: " << root->sub_statements.size() << '\n';
-
+	int counter_nodes = 0;
+	for (const ast_node* node : root->sub_statements)
+	{
+		counter_nodes ++;
+		std::cout << counter_nodes << ")" << "Type: " << node_type_to_string(node->type) << " " 
+		<< "Child: " << node_type_to_string(node->child->type);
+		if (node->child->value != nullptr)
+		{
+			std::cout << " " << "Value of child: " << *node->child->value;
+		}
+		std::cout << '\n';
+	}
 	return 0;
 }
 
