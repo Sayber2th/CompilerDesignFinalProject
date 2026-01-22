@@ -9,7 +9,7 @@
 <alnum> -> (_ + <letter>)^+ (<letter>^* <number>^*)^*
 <letter> -> a|b|c|...|z
 <number> -> 
-<expression> -> int
+<expression> -> int | string | id
 
 <syntax> -> <production> <syntax> | ε
-<production> -> <identifier> "=" <expression>
+<production> -> <identifier> "=" <expression> ; | <keyword> | ε

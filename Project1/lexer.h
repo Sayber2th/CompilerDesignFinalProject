@@ -8,6 +8,7 @@ enum token_type : std::uint8_t
 {
 	token_identifier,
 	token_int,
+	token_string,
 	token_equals,
 	token_keyword,
 	token_semicolon,
@@ -16,6 +17,7 @@ enum token_type : std::uint8_t
 	token_left_curly,
 	token_right_curly,
 	token_comma,
+	token_quotes_double,
 	token_rel_equals,
 	token_rel_notequals,
 	token_rel_lessthan,
@@ -59,13 +61,14 @@ public:
 	void check_and_skip_newline();
 	void raise_error_unidentified_symbol() const;
 
-	std::vector<std::string> keywords = {"int", "if", "else", "return", "true", "false"};
+	std::vector<std::string> keywords = {"int", "string", "if", "else", "return", "true", "false", "print"};
 	std::vector<char> double_character_specials = {'!', '=', '<', '>'};
 
 	std::vector<token *> tokenize();
 	token* tokenize_keyword_or_identifier();
 	token* tokenize_integer();
 	token* tokenize_special(token_type type);
+	token* tokenize_string();
 
 private:
 	std::string source_;

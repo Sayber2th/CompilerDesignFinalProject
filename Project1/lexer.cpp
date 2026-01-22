@@ -63,35 +63,38 @@ std::string type_to_string(const enum token_type type)
 {
 	switch (type)
 	{
-	case token_identifier: return "TOKEN_IDENTIFIER";
-	case token_int: return "TOKEN_INT";
-	case token_equals: return "TOKEN_EQUALS";
-	case token_keyword: return "TOKEN_KEYWORD";
-	case token_semicolon: return "TOKEN_SEMICOLON";
-	case token_left_paren: return "TOKEN_LEFT_PAREN";
-	case token_right_paren: return "TOKEN_RIGHT_PAREN";
-	case token_left_curly: return "TOKEN_LEFT_CURLY";
-	case token_right_curly: return "TOKEN_RIGHT_CURLY";
-	case token_comma: return "TOKEN_COMMA";
-	case token_rel_equals: return "TOKEN_REL_EQUALS";
-	case token_rel_notequals: return "TOKEN_REL_NOTEQUALS";
-	case token_rel_lessthan: return "TOKEN_REL_LESSTHAN";
-	case token_rel_lessthanequals: return "TOKEN_REL_LESSTHANEQUALS";
-	case token_rel_greaterthan: return "TOKEN_REL_GREATERTHAN";
-	case token_rel_greaterthanequals: return "TOKEN_REL_GREATERTHANEQUALS";
-	case token_plus: return "TOKEN_PLUS";
-	case token_minus: return "TOKEN_MINUS";
-	case token_star: return "TOKEN_STAR";
-	case token_slash: return "TOKEN_SLASH";
-	case token_if: return "TOKEN_IF";
-	case token_else: return "TOKEN_ELSE";
-	case token_eof: return "TOKEN_EOF";
-	default: return "UNRECOGNIZED TOKEN";  // NOLINT(clang-diagnostic-covered-switch-default)
+	case token_identifier: return "token_identifier";
+	case token_int: return "token_int";
+	case token_quotes_double: return "token_quotes_double";	
+	case token_equals: return "token_equals";
+	case token_keyword: return "token_keyword";
+	case token_semicolon: return "token_semicolon";
+	case token_left_paren: return "token_left_paren";
+	case token_right_paren: return "token_right_paren";
+	case token_left_curly: return "token_left_curly";
+	case token_right_curly: return "token_right_curly";
+	case token_comma: return "token_comma";
+	case token_string: return "token_string";	
+	case token_rel_equals: return "token_rel_equals";
+	case token_rel_notequals: return "token_rel_notequals";
+	case token_rel_lessthan: return "token_rel_lessthan";
+	case token_rel_lessthanequals: return "token_rel_lessthanequals";
+	case token_rel_greaterthan: return "token_rel_greaterthan";
+	case token_rel_greaterthanequals: return "token_rel_greaterthanequals";
+	case token_plus: return "token_plus";
+	case token_minus: return "token_minus";
+	case token_star: return "token_star";
+	case token_slash: return "token_slash";
+	case token_if: return "token_if";
+	case token_else: return "token_else";
+	case token_eof: return "token_eof";
+	default: return "Unrecognised token";  // NOLINT(clang-diagnostic-covered-switch-default)
 	}
 }
 
 token* lexer::tokenize_keyword_or_identifier()
 {
+	const auto new_token = new token();
 	std::stringstream buffer;
 	buffer << advance();
 
@@ -99,19 +102,17 @@ token* lexer::tokenize_keyword_or_identifier()
 	{
 		buffer << advance();
 	}
-
-	const auto new_token = new token();
-
-	new_token->value = buffer.str();
+	
 	new_token->type = (
-		std::ranges::find(keywords, new_token->value) != keywords.end()
+			std::find(keywords.begin(), keywords.end(), buffer.str()) != keywords.end()  // NOLINT(modernize-use-ranges)
 		) ? token_keyword : token_identifier;
-
+	new_token->value = buffer.str();
 	return new_token;
 }
 
 token* lexer::tokenize_integer()
 {
+	const auto new_token = new token();
 	std::stringstream buffer;
 	buffer << advance();
 
@@ -119,25 +120,25 @@ token* lexer::tokenize_integer()
 	{
 		buffer << advance();
 	}
-
-	const auto new_token = new token();
-
+	
 	new_token->type = token_int;
 	new_token->value = buffer.str();
-
 	return new_token;
 }
 
 token* lexer::tokenize_special(const token_type type)
 {
-	const auto new_token = new token;
+	const auto new_token = new token();
 	new_token->type = type;
+	
 	const bool is_double_char_special = (
-		std::ranges::find(double_character_specials, peek(-1)
+		std::find(double_character_specials.begin(), double_character_specials.end(), peek(-1)  // NOLINT(modernize-use-ranges)
 		) != double_character_specials.end());
 	
-	if (peek(-1) != ' ' && is_double_char_special)
+	
+	if (peek(-1) != ' ' && is_double_char_special && current_ == '=')
 	{
+		//('==', '!=', '<=', '>=')
 		std::stringstream buffer;
 		buffer << peek(-1);
 		buffer << advance();
@@ -149,6 +150,21 @@ token* lexer::tokenize_special(const token_type type)
 		new_token->value = std::string(1, advance());
 	}
 
+	return new_token;
+}
+
+token* lexer::tokenize_string()
+{
+	const auto new_token = new token();
+	std::stringstream buffer;
+	
+	while (current_ != '"')
+	{
+		buffer << advance();
+	}
+	
+	new_token->type = token_string;
+	new_token->value = buffer.str();
 	return new_token;
 }
 
@@ -264,10 +280,17 @@ std::vector<token *> lexer::tokenize()
 				tokens.push_back(tokenize_special(token_right_curly));
 				break;
 			}
+			case '"':
+			{
+				tokens.push_back(tokenize_special(token_quotes_double));
+				tokens.push_back(tokenize_string());
+				tokens.push_back(tokenize_special(token_quotes_double));
+				break;
+			}
 			case 0:
 			{
 				tokens.push_back(tokenize_special(token_eof));
-				is_eof = true;	
+				is_eof = true;
 				break;
 			}
 			default :
