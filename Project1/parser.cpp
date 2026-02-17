@@ -8,16 +8,27 @@ std::string node_type_to_string(const enum node_type type)
 {
 	switch (type)
 	{
-	case node_root: return "node_root";
-	case node_return: return "node_return";
-	case node_print: return "node_print";
-	case node_int: return "node_int";
-	case node_string: return "node_string";
-	case node_identifier: return "node_identifier";
-	case node_variable: return "node_variable";
-	case node_keyword_int: return "node_keyword_int";
-	case node_keyword_string: return "node_keyword_string";
+	case node_root: return "Root node";
+	case node_return: return "Keyword return";
+	case node_print: return "Keyword print";
+	case node_int: return "Integer";
+	case node_string: return "String";
+	case node_identifier: return "Identifier";
+	case node_keyword_int: return "Keyword int";
+	case node_keyword_string: return "Keyword string";
 	default: return "Unrecognized node type";  // NOLINT(clang-diagnostic-covered-switch-default)
+	}
+}
+std::string expression_type_to_string(const enum expression_type type)
+{
+	switch (type)
+	{
+	case expression_declaration_only : return "Declaration only";
+	case expression_declaration_and_assigment : return "Declaration and assignment";
+	case expression_assigment : return "Assignment";
+	case expression_return : return "Return statement";
+	case expression_print : return "Print statement";
+	default: return "Unrecognized statement type";  // NOLINT(clang-diagnostic-covered-switch-default)
 	}
 }
 
@@ -43,7 +54,7 @@ token* parser::proceed(const enum token_type type)
 	}
 }
 
-ast_node* parser::parse_identifier()
+ast_node* parser::parse_identifier(const bool is_statement_beginning)
 {
 	if (current_->type != token_identifier)
 	{
@@ -51,6 +62,9 @@ ast_node* parser::parse_identifier()
 		raise_error_syntax(current_->type, current_->value);
 		exit(1);
 	}
+	
+	const auto new_node = new ast_node;
+	new_node->value = &current_->value;
 	
 	proceed(token_identifier);
 	
@@ -72,9 +86,12 @@ ast_node* parser::parse_identifier()
 		raise_error_syntax(current_->type, current_->value);
 		exit(1);
 	}
-
-	const auto new_node = new ast_node;
-	new_node->type = node_variable;
+	
+	if (is_statement_beginning)
+	{
+		new_node->expression_type = expression_assigment;
+	}
+	new_node->type = node_identifier;
 	
 	if (current_->type == token_int)
 	{
@@ -162,7 +179,9 @@ ast_node* parser::parse_keyword_int()
 	proceed(token_keyword);
 
 	const auto new_node = new ast_node;
+	new_node->expression_type = parser_tokens_[index_+1]->type == token_equals ? expression_declaration_and_assigment : expression_declaration_only;
 	new_node->type = node_keyword_int;
+	new_node->node_type_check = node_int;
 	new_node->child = parse_identifier();
 
 	return new_node;
@@ -174,7 +193,9 @@ ast_node* parser::parse_keyword_string()
 	proceed(token_keyword);
 
 	const auto new_node = new ast_node;
+	new_node->expression_type = parser_tokens_[index_+1]->type == token_equals ? expression_declaration_and_assigment : expression_declaration_only;
 	new_node->type = node_keyword_string;
+	new_node->node_type_check = node_string;
 	new_node->child = parse_identifier();
 	
 	return new_node;
@@ -186,6 +207,7 @@ ast_node* parser::parse_keyword_return()
 	proceed(token_keyword);
 
 	const auto new_node = new ast_node;
+	new_node->expression_type = expression_return;
 	new_node->type = node_return;
 	if (current_->type == token_int)
 	{
@@ -211,6 +233,7 @@ ast_node* parser::parse_keyword_print()
 	proceed(token_keyword);
 	
 	const auto new_node = new ast_node;
+	new_node->expression_type = expression_print;
 	new_node->type = node_print;
 	
 	proceed(token_left_paren);
@@ -257,7 +280,7 @@ ast_node* parser::parse()
 			}
 			case token_identifier :
 			{
-				root->sub_statements.push_back(parse_identifier());
+				root->sub_statements.push_back(parse_identifier(true));
 				break;
 			}
 			default :

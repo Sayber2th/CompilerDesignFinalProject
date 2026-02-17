@@ -1,9 +1,11 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "lexer.h"
 #include <vector>
 #include <string>
+
+enum token_type : std::uint8_t;
+struct token;
 
 enum node_type : std::uint8_t
 {
@@ -13,20 +15,31 @@ enum node_type : std::uint8_t
 	node_int,
 	node_string,
 	node_identifier,
-	node_variable,
 	node_keyword_int,
 	node_keyword_string
 };
 
+enum expression_type : std::uint8_t
+{
+	expression_declaration_only,
+	expression_declaration_and_assigment,
+	expression_assigment,
+	expression_return,
+	expression_print
+};
+
 struct ast_node
 {
-	enum node_type type;
+	node_type type;
+	node_type node_type_check;
+	expression_type expression_type;
 	std::string* value = nullptr;
 	ast_node* child;
 	std::vector<ast_node*> sub_statements;
 };
 
 std::string node_type_to_string(enum node_type type);
+std::string expression_type_to_string(enum expression_type type);
 
 class parser
 {
@@ -41,9 +54,9 @@ public:
 	}
 
 	static void raise_error_syntax(token_type token_type, const std::string& token_value); //improve the formatting for this later
-	token* proceed(enum token_type type);
+	token* proceed(token_type type);
 	
-	ast_node* parse_identifier();
+	ast_node* parse_identifier(bool is_statement_beginning = false);
 	ast_node* parse_keyword();
 	
 	/*

@@ -1,0 +1,5 @@
+int a = 10;
+string b = "testing";
+int typechecktest;
+typechecktest = "string in integer type variable";
+print(d);

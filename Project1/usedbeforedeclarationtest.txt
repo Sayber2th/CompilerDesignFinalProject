@@ -1,0 +1,4 @@
+int a = 10;
+string b = "testing";
+variablenotdeclaredbutused = 11;
+print(d);

@@ -1,5 +1,5 @@
 ﻿Nova CFG
-ε
+WORK IN PROGRESS!
 
 <source> -> <statement>*
 <statement> -> <declaration> ; | <assignment> ; | RETURN <expression> ; | PRINT <expression> ;
@@ -13,3 +13,11 @@
 
 <syntax> -> <production> <syntax> | ε
 <production> -> <identifier> "=" <expression> ; | <keyword> | ε
+
+substatements--
+               |
+                 -declaration_with_assignment
+                 -declaration_without_assignment
+                 -assignment
+                 -predefined functions
+                 -

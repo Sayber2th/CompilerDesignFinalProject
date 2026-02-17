@@ -22,15 +22,21 @@
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="lexer.cpp" />
     <ClCompile Include="parser.cpp" />
+    <ClCompile Include="semanticAnalyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="driver.h" />
     <ClInclude Include="lexer.h" />
     <ClInclude Include="parser.h" />
+    <ClInclude Include="semanticAnalyzer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ContextFreeGrammar.txt" />
     <Text Include="test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="typechecktest.txt" />
+    <Content Include="usedbeforedeclarationtest.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>18.0</VCProjectVersion>

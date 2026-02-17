@@ -8,6 +8,7 @@
 #include "driver.h"
 #include "lexer.h"
 #include "parser.h"
+#include "semanticAnalyzer.h"
 
 int main(const int argc, char* argv[])
 {
@@ -22,6 +23,7 @@ int main(const int argc, char* argv[])
 	source_code.append("\0");
 	std::cout << "\nContent of source file:" << '\n' << source_code << '\n'; //debug
 
+	//Lexical analysis
 	lexer lexer(source_code);
 	std::vector <token *> tokens = lexer.tokenize();
 
@@ -32,30 +34,43 @@ int main(const int argc, char* argv[])
 		tokens.push_back(eof_token);
 	}
 
-	std::cout << "\nList of tokens:" << '\n';
-	int counter_tokens = 0;
-	for (const token* temp : tokens)
-	{
-		counter_tokens ++;
-		std::cout << counter_tokens << ")" << "Type: " << token_type_to_string(temp->type) << " " << "Value: " << temp->value << '\n';
-	}
+	/*
+	 *Debug
+	 */
+	// std::cout << "\nList of tokens:" << '\n';
+	// int counter_tokens = 0;
+	// for (const token* temp : tokens)
+	// {
+	// 	counter_tokens ++;
+	// 	std::cout << counter_tokens << ")" << "Type: " << token_type_to_string(temp->type) << " " << "Value: " << temp->value << '\n';
+	// }
 
+	//Syntax Analysis
 	parser parser(tokens);
 	const ast_node* root = parser.parse();
 	
+	/*
+	 *Debug
+	 */
 	std::cout << "\nNumber of statements: " << root->sub_statements.size() << '\n';
 	int counter_nodes = 0;
 	for (const ast_node* node : root->sub_statements)
 	{
 		counter_nodes ++;
-		std::cout << counter_nodes << ")" << "Type: " << node_type_to_string(node->type) << " " 
+		std::cout << counter_nodes << ")" << "Statement Type: " << expression_type_to_string(node->expression_type) << " | " 
+		<< "Node Type: " << node_type_to_string(node->type) << " | " 
 		<< "Child: " << node_type_to_string(node->child->type);
 		if (node->child->value != nullptr)
 		{
-			std::cout << " " << "Value of child: " << *node->child->value;
+			std::cout << " | " << "Value of child: " << *node->child->value;
 		}
 		std::cout << '\n';
 	}
+	
+	//Semantic Analysis
+	semantic_analyzer semantic_analyzer(root);
+	semantic_analyzer.analyse();
+	
 	return 0;
 }
 
