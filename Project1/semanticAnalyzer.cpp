@@ -58,8 +58,3 @@ void semantic_analyzer::perform_type_check(const ast_node* identifier_node)
         exit(1);
     }
 }
-
-void semantic_analyzer::print_declared_identifiers()
-{
-    //implement function
-}

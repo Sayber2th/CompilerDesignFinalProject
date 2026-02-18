@@ -21,7 +21,6 @@ public:
     void track_declared_identifiers(const ast_node* node);
     void check_identifier_declaration_before_assigment(const ast_node* identifier_node) const;
     void perform_type_check(const ast_node* identifier_node);
-    void print_declared_identifiers();
     
 private:
     const ast_node* root_;

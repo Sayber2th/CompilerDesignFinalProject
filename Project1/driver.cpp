@@ -1,14 +1,14 @@
+#include "driver.h"
+#include "lexer.h"
+#include "parser.h"
+#include "semanticAnalyzer.h"
+
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <cstdlib>
-
-#include "driver.h"
-#include "lexer.h"
-#include "parser.h"
-#include "semanticAnalyzer.h"
 
 int main(const int argc, char* argv[])
 {
