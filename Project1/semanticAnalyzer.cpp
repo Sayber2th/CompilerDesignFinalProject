@@ -58,3 +58,15 @@ void semantic_analyzer::perform_type_check(const ast_node* identifier_node)
         exit(1);
     }
 }
+
+void semantic_analyzer::print_symbol_table() const
+{
+    std::cout << "\nList of symbols: " << '\n';
+    size_t counter = declared_identifiers_.size();
+    for (const auto& [symbol, type] :declared_identifiers_)
+    {
+        counter --;
+        std::cout << declared_identifiers_.size() - counter << ")" 
+        << "Symbol: " << symbol << " | Type: " << node_type_to_string(type) << '\n';
+    }
+}

@@ -59,6 +59,7 @@ public:
 	char advance();
 	void check_and_skip_whitespace();
 	void check_and_skip_newline();
+	static void print_scanned_tokens(const std::vector<token*>& tokens);
 	void raise_error_unidentified_symbol() const;
 
 	std::vector<std::string> keywords = {"int", "string", "if", "else", "return", "true", "false", "print"};

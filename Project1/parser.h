@@ -54,8 +54,9 @@ public:
 	}
 
 	static void raise_error_syntax(token_type token_type, const std::string& token_value); //improve the formatting for this later
-	token* proceed(token_type type);
+	static void print_abstract_syntax_tree(const ast_node*& root);
 	
+	token* proceed(token_type type);
 	ast_node* parse_identifier(bool is_statement_beginning = false);
 	ast_node* parse_keyword();
 	
@@ -82,4 +83,4 @@ private:
 	token* current_;
 };
 
-#endif // !PARSER_H
+#endif // PARSER_H

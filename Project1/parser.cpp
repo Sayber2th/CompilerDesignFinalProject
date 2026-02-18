@@ -33,10 +33,28 @@ std::string expression_type_to_string(const enum expression_type type)
 	}
 }
 
-//improve the formatting for this function later
+//TO DO Improve the formatting for this function
 void parser::raise_error_syntax(const token_type token_type, const std::string& token_value)
 {
 	std::cerr << "[!] SYNTAX ERROR " << token_type_to_string(token_type) << " " << token_value << '\n';
+}
+
+void parser::print_abstract_syntax_tree(const ast_node*& root)
+{
+	std::cout << "\nNumber of statements: " << root->sub_statements.size() << '\n';
+	int counter_nodes = 0;
+	for (const ast_node* node : root->sub_statements)
+	{
+		counter_nodes ++;
+		std::cout << counter_nodes << ")" << "Statement Type: " << expression_type_to_string(node->expression_type) << " | " 
+		<< "Node Type: " << node_type_to_string(node->type) << " | " 
+		<< "Child: " << node_type_to_string(node->child->type);
+		if (node->child->value != nullptr)
+		{
+			std::cout << " | " << "Value of child: " << *node->child->value;
+		}
+		std::cout << '\n';
+	}
 }
 
 token* parser::proceed(const enum token_type type)

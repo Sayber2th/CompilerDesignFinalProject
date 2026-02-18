@@ -12,64 +12,29 @@
 
 int main(const int argc, char* argv[])
 {
-	if (argc < 2) 
-	{
-		std::cerr << "\nPlease provide the source file using the command: Project1.exe <source-file-path>";
-		exit(1);
-	}
-	
-	std::string source_code = read_file(argv[1]);
-
-	source_code.append("\0");
+	const std:: string source_code = try_read_file(argc, argv);
 	std::cout << "\nContent of source file:" << '\n' << source_code << '\n'; //debug
 
-	//Lexical analysis
+	/*
+	 *Lexical analysis
+	 */
 	lexer lexer(source_code);
-	std::vector <token *> tokens = lexer.tokenize();
-
-	if (tokens.back()->type != token_eof)
-	{
-		const auto eof_token = new token;
-		eof_token->type = token_eof;
-		tokens.push_back(eof_token);
-	}
+	const std::vector <token *> tokens = lexer.tokenize();
+	lexer::print_scanned_tokens(tokens); //Debug
 
 	/*
-	 *Debug
+	 *Syntax Analysis
 	 */
-	// std::cout << "\nList of tokens:" << '\n';
-	// int counter_tokens = 0;
-	// for (const token* temp : tokens)
-	// {
-	// 	counter_tokens ++;
-	// 	std::cout << counter_tokens << ")" << "Type: " << token_type_to_string(temp->type) << " " << "Value: " << temp->value << '\n';
-	// }
-
-	//Syntax Analysis
 	parser parser(tokens);
 	const ast_node* root = parser.parse();
+	parser::print_abstract_syntax_tree(root); //Debug
 	
 	/*
-	 *Debug
+	 *Semantic Analysis
 	 */
-	std::cout << "\nNumber of statements: " << root->sub_statements.size() << '\n';
-	int counter_nodes = 0;
-	for (const ast_node* node : root->sub_statements)
-	{
-		counter_nodes ++;
-		std::cout << counter_nodes << ")" << "Statement Type: " << expression_type_to_string(node->expression_type) << " | " 
-		<< "Node Type: " << node_type_to_string(node->type) << " | " 
-		<< "Child: " << node_type_to_string(node->child->type);
-		if (node->child->value != nullptr)
-		{
-			std::cout << " | " << "Value of child: " << *node->child->value;
-		}
-		std::cout << '\n';
-	}
-	
-	//Semantic Analysis
 	semantic_analyzer semantic_analyzer(root);
 	semantic_analyzer.analyse();
+	semantic_analyzer.print_symbol_table(); //Debug
 	
 	return 0;
 }
@@ -92,4 +57,18 @@ std::string read_file(const char *file_name)
 	}
 
 	return buffer.str();
+}
+
+std::string try_read_file(const int argc, char* argv[])
+{
+	if (argc < 2) 
+	{
+		std::cerr << "\nPlease provide the source file using the command: Project1.exe <source-file-path>";
+		exit(1);
+	}
+	
+	std::string source_code = read_file(argv[1]);
+	source_code.append("\0");
+	
+	return source_code;
 }

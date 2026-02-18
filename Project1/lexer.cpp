@@ -54,6 +54,19 @@ void lexer::check_and_skip_newline()
 	}
 }
 
+void lexer::print_scanned_tokens(const std::vector<token*>& tokens)
+{
+	std::cout << "\nNumber of tokens: " << tokens.size() << '\n';
+	std::cout << "\nList of tokens:" << '\n';
+	int counter_tokens = 0;
+	for (const token* temp : tokens)
+	{
+		counter_tokens ++;
+		std::cout << counter_tokens << ")" << "Type: " << token_type_to_string(temp->type) << " | " 
+		<< "Value: " << temp->value << '\n';
+	}
+}
+
 void lexer::raise_error_unidentified_symbol() const
 {
 	std::cout << "[!] LEXER ERROR : Unidentified symbol: " << current_ << " " << "at" << " ";
@@ -300,6 +313,13 @@ std::vector<token *> lexer::tokenize()
 				exit(1);
 			}
 		}
+	}
+	
+	if (tokens.back()->type != token_eof)
+	{
+		const auto eof_token = new token;
+		eof_token->type = token_eof;
+		tokens.push_back(eof_token);
 	}
 
 	return tokens;
