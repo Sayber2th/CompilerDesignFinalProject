@@ -67,6 +67,13 @@ std::string try_read_file(const int argc, char* argv[])
 		exit(1);
 	}
 	
+	if (argc > 2) 
+	{
+		std::cerr << "\nThis program only takes the source code text file as a parameter."
+		<< "\nPlease provide the correct parameter using the command: Project1.exe <source-file-path>";
+		exit(1);
+	}
+	
 	std::string source_code = read_file(argv[1]);
 	source_code.append("\0");
 	

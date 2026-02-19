@@ -33,10 +33,11 @@ std::string expression_type_to_string(const enum expression_type type)
 	}
 }
 
-//TO DO Improve the formatting for this function
-void parser::raise_error_syntax(const token_type token_type, const std::string& token_value)
+void parser::raise_error_syntax(const token_type token_type, const std::string& token_value, const int line_number, const int character_number)
 {
-	std::cerr << "[!] SYNTAX ERROR " << token_type_to_string(token_type) << " " << token_value << '\n';
+	std::cerr << "\n[!] SYNTAX ERROR " << token_type_to_string(token_type) << '\n' 
+	<< "Token: " << token_value << " | " 
+	<< "At line: " << line_number << " | " << " and character: " << character_number << '\n';
 }
 
 void parser::print_abstract_syntax_tree(const ast_node*& root)
@@ -61,8 +62,7 @@ token* parser::proceed(const enum token_type type)
 {
 	if (current_->type != type)
 	{
-		std::cout << "proceed error" << '\n';
-		raise_error_syntax(current_->type, current_->value);
+		raise_error_syntax(current_->type, current_->value, current_->line_number, current_->character_number);
 		exit(1);
 	}
 	else
@@ -77,8 +77,7 @@ ast_node* parser::parse_identifier(const bool is_statement_beginning)
 {
 	if (current_->type != token_identifier)
 	{
-		std::cout << "parse identifier error" << '\n';
-		raise_error_syntax(current_->type, current_->value);
+		raise_error_syntax(current_->type, current_->value, current_->line_number, current_->character_number);
 		exit(1);
 	}
 	
@@ -101,8 +100,7 @@ ast_node* parser::parse_identifier(const bool is_statement_beginning)
 	}
 	else
 	{
-		std::cout << "parse identifier error" << '\n';
-		raise_error_syntax(current_->type, current_->value);
+		raise_error_syntax(current_->type, current_->value, current_->line_number, current_->character_number);
 		exit(1);
 	}
 	
@@ -146,8 +144,7 @@ ast_node* parser::parse_keyword()
 	}
 	else
 	{
-		std::cout << "parse keyword error" << '\n';
-		raise_error_syntax(current_->type, current_->value);
+		raise_error_syntax(current_->type, current_->value, current_->line_number, current_->character_number);
 		exit(1);
 	}
 }
@@ -159,8 +156,7 @@ ast_node* parser::parse_integer()
 {
 	if (current_->type != token_int)
 	{
-		std::cout << "parse integer error" << '\n';
-		raise_error_syntax(current_->type, current_->value);
+		raise_error_syntax(current_->type, current_->value, current_->line_number, current_->character_number);
 		exit(1);
 	}
 
@@ -176,8 +172,7 @@ ast_node* parser::parse_string()
 {
 	if (current_->type != token_string)
 	{
-		std::cout << "parse string error" << '\n';
-		raise_error_syntax(current_->type, current_->value);
+		raise_error_syntax(current_->type, current_->value, current_->line_number, current_->character_number);
 		exit(1);
 	}
 	
@@ -240,8 +235,7 @@ ast_node* parser::parse_keyword_return()
 	}
 	else
 	{
-		std::cout << "parse keyword return error" << '\n';
-		raise_error_syntax(current_->type, current_->value);
+		raise_error_syntax(current_->type, current_->value, current_->line_number, current_->character_number);
 	}
 
 	return new_node;
@@ -274,8 +268,7 @@ ast_node* parser::parse_keyword_print()
 	}
 	else
 	{
-		std::cout << "parse keyword print error" << '\n';
-		raise_error_syntax(current_->type, current_->value);
+		raise_error_syntax(current_->type, current_->value, current_->line_number, current_->character_number);
 	}
 	
 	//proceed(token_right_paren);
@@ -284,7 +277,6 @@ ast_node* parser::parse_keyword_print()
 
 ast_node* parser::parse()
 {
-	//std::cout << "parse called" << std::endl; //debug
 	const auto root = new ast_node();
 	root->type = node_root;
 
@@ -304,8 +296,7 @@ ast_node* parser::parse()
 			}
 			default :
 			{
-				std::cout << "parse error" << '\n';	
-				raise_error_syntax(current_->type, current_->value);
+				raise_error_syntax(current_->type, current_->value, current_->line_number, current_->character_number);
 				exit(1);
 			}
 		}

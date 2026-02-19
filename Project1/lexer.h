@@ -37,6 +37,8 @@ struct token
 {
 	token_type type;
 	std::string value;
+	int line_number;
+	int character_number;
 };
 
 std::string token_type_to_string(enum token_type type);

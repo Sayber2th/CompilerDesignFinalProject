@@ -69,7 +69,7 @@ void lexer::print_scanned_tokens(const std::vector<token*>& tokens)
 
 void lexer::raise_error_unidentified_symbol() const
 {
-	std::cout << "[!] LEXER ERROR : Unidentified symbol: " << current_ << " " << "at" << " ";
+	std::cout << "[!] TOKENIZATION ERROR : Unidentified symbol: " << current_ << " " << "at" << " ";
 	std::cout << "Line: " << line_number_ << " " << "Character: " << character_number_ << '\n';
 }
 
@@ -109,6 +109,8 @@ std::string token_type_to_string(const enum token_type type)
 token* lexer::tokenize_keyword_or_identifier()
 {
 	const auto new_token = new token();
+	new_token->line_number = line_number_;
+	new_token->character_number = character_number_;
 	std::stringstream buffer;
 	buffer << advance();
 
@@ -127,6 +129,8 @@ token* lexer::tokenize_keyword_or_identifier()
 token* lexer::tokenize_integer()
 {
 	const auto new_token = new token();
+	new_token->line_number = line_number_;
+	new_token->character_number = character_number_;
 	std::stringstream buffer;
 	buffer << advance();
 
@@ -143,6 +147,8 @@ token* lexer::tokenize_integer()
 token* lexer::tokenize_special(const token_type type)
 {
 	const auto new_token = new token();
+	new_token->line_number = line_number_;
+	new_token->character_number = character_number_;
 	new_token->type = type;
 	
 	const bool is_double_char_special = (
@@ -170,6 +176,8 @@ token* lexer::tokenize_special(const token_type type)
 token* lexer::tokenize_string()
 {
 	const auto new_token = new token();
+	new_token->line_number = line_number_;
+	new_token->character_number = character_number_;
 	std::stringstream buffer;
 	
 	while (current_ != '"')

@@ -50,7 +50,7 @@ void semantic_analyzer::perform_type_check(const ast_node* identifier_node)
     
     if (!declaration_type_matches_stored_value)
     {
-        node_type variable_type = declared_identifiers_[*identifier_node->value];
+        const node_type variable_type = declared_identifiers_[*identifier_node->value];
         std::cerr << "\nValue stored in the variable must match its declared type!" << '\n'
         << "Variable: " << *identifier_node->value << '\n'
         << "Type of variable: " << node_type_to_string(variable_type) << '\n'
