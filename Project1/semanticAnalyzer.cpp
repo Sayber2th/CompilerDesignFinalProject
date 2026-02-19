@@ -1,4 +1,5 @@
-﻿#include "semanticAnalyzer.h"
+﻿// ReSharper disable CppClangTidyBugproneBranchClone
+#include "semanticAnalyzer.h"
 #include "parser.h"
 
 #include <iostream>
@@ -14,8 +15,13 @@ void semantic_analyzer::analyse()
         
         if (node->expression_type == expression_assigment)
         {
-            check_identifier_declaration_before_assigment(node);
+            check_identifier_declaration_before_reference(node);
             perform_type_check(node);
+        }
+        
+        if (node->expression_type == expression_return || node->expression_type == expression_print)
+        {
+            check_identifier_declaration_before_reference(node);
         }
     }
 }
@@ -34,12 +40,25 @@ void semantic_analyzer::track_declared_identifiers(const ast_node* node)
     }
 }
 
-void semantic_analyzer::check_identifier_declaration_before_assigment(const ast_node* identifier_node) const
+void semantic_analyzer::check_identifier_declaration_before_reference(const ast_node* node) const
 {
-    if (!is_declared(identifier_node->value))
+    if (node->expression_type == expression_assigment)
     {
-        std::cerr<< "\nVariable must be declared before usage: " << *identifier_node->value << '\n';
-        exit(1);
+        if (!is_declared(node->value))
+        {
+            std::cerr<< "\nVariable must be declared before usage: " << *node->value << '\n';
+            exit(1);
+        }
+    }
+    
+    if (node->expression_type == expression_return || node->expression_type == expression_print)
+    {
+        std::cout << "\nRecognised print or return statement." << '\n'; //debug
+        if (!is_declared(node->child->value))
+        {
+            std::cerr<< "\nVariable must be declared before usage: " << *node->child->value << '\n';
+            exit(1);
+        }
     }
 }
 
