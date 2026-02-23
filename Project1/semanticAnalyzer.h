@@ -16,17 +16,19 @@ public:
         
     }
 
-    static std::string get_data_type_mapped_to_node_kind(node_kind node_kind);
     void analyse();
-    bool is_declared(const std::string& value) const;
+    [[nodiscard]] bool is_declared(const std::string& value) const;
     void track_declared_identifiers(const ast_node* node);
     void check_identifier_declaration_before_reference(const ast_node* node) const;
-    void perform_type_check(const ast_node* assigment_node) const;
+    void perform_type_check(const ast_node* node) const;
     void print_symbol_table() const;
     
 private:
     const ast_node* program_;
     std::unordered_map<std::string, std::string> declared_identifiers_;
+    
+    std::string infer_expression_type(const ast_node* node) const;
+    void validate_expression_identifiers(const ast_node* node) const;
 };
 
 #endif //SEMANTIC_ANALYZER_H
