@@ -34,9 +34,9 @@ int main(const int argc, char* argv[])
 	/*
 	 *Semantic Analysis
 	 */
-	semantic_analyzer semantic_analyzer(program);
-	semantic_analyzer.analyse();
-	semantic_analyzer.print_symbol_table(); //Debug
+	// semantic_analyzer semantic_analyzer(program);
+	// semantic_analyzer.analyse();
+	// semantic_analyzer.print_symbol_table(); //Debug
 	
 	return 0;
 }

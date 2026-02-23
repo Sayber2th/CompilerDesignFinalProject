@@ -23,7 +23,7 @@ void semantic_analyzer::analyse()
         if (node->kind == node_declaration)
         {
             track_declared_identifiers(node);
-            if (node->children.size() > 1)
+            if (node->lhs != nullptr)
             {
                 perform_type_check(node);
             }

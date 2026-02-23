@@ -1,11 +1,15 @@
-int a = 10;
+int a = 10 + 5;
 string b = "testing";
-int c;
+int c = a * 4 + 5;
 string d;
-c = 5;
 d = "given value later";
 print("display this string");
 print(a);
 print(b);
 print(c);
 print(d);
+print(c/4);
+print(2+3*4);
+print((2+3)*4);
+print(10/2*3);
+print(10/(2*3));

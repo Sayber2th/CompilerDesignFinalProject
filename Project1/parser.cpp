@@ -19,6 +19,10 @@ std::string node_kind_to_debug_string(const node_kind kind)
 	case node_identifier: return "Identifier";
 	case node_string_literal: return "String literal";
 	case node_integer_literal: return "Integer literal";
+	case node_add: return "Add";
+	case node_subtract: return "Subtract";
+	case node_multiply: return "Multiply";
+	case node_divide: return "Divide";
 	default: return "Unrecognized node type";  // NOLINT(clang-diagnostic-covered-switch-default)
 	}
 }
@@ -102,17 +106,16 @@ ast_node* parser::parse_declaration()
 	if (current_->type == token_equals)
 	{
 		proceed(token_equals);
-		if (current_->type == token_int)
-		{
-			new_node->children.push_back(parse_integer());
-		}
-		else if (current_->type == token_quotes_double)
+		if (current_->type == token_quotes_double)
 		{
 			proceed(token_quotes_double);
 			new_node->children.push_back(parse_string());
 			proceed(token_quotes_double);
 		}
-		else syntax_error_protocol();
+		else
+		{
+			new_node->children.push_back(parse_expression());
+		}
 	}
 	return new_node;
 }
@@ -142,6 +145,67 @@ ast_node* parser::parse_assignment()
 	return new_node;
 }
 
+ast_node* parser::parse_expression()
+{
+	ast_node* node = parse_term();
+
+	while (current_->type == token_plus || current_->type == token_minus)
+	{
+		const token_type op = current_->type;
+		proceed(op);
+
+		auto* op_node = new ast_node;
+		op_node->kind = (op == token_plus) ? node_add : node_subtract;
+
+		op_node->children.push_back(node);
+		op_node->children.push_back(parse_term());
+
+		node = op_node;
+	}
+
+	return node;
+}
+
+ast_node* parser::parse_term()
+{
+	ast_node* node = parse_factor();
+
+	while (current_->type == token_star || current_->type == token_slash)
+	{
+		const token_type op = current_->type;
+		proceed(op);
+
+		auto* op_node = new ast_node;
+		op_node->kind = (op == token_star) ? node_multiply : node_divide;
+
+		op_node->children.push_back(node);
+		op_node->children.push_back(parse_factor());
+
+		node = op_node;
+	}
+
+	return node;
+}
+
+ast_node* parser::parse_factor()
+{
+	if (current_->type == token_int)
+		return parse_integer();
+
+	if (current_->type == token_identifier)
+		return parse_identifier();
+
+	if (current_->type == token_left_paren)
+	{
+		proceed(token_left_paren);
+		ast_node* node = parse_expression();
+		proceed(token_right_paren);
+		return node;
+	}
+
+	syntax_error_protocol();
+}
+
 ast_node* parser::parse_identifier()
 {
 	if (current_->type != token_identifier) syntax_error_protocol();
@@ -163,21 +227,16 @@ ast_node* parser::parse_print_stmt()
 	
 	proceed(token_left_paren);
 	
-	if (current_->type == token_int)
-	{
-		new_node->children.push_back(parse_integer());
-	}
-	else if (current_->type == token_quotes_double)
+	if (current_->type == token_quotes_double)
 	{
 		proceed(token_quotes_double);
 		new_node->children.push_back(parse_string());
 		proceed(token_quotes_double);
 	}
-	else if (current_->type == token_identifier)
+	else
 	{
-		new_node->children.push_back(parse_identifier());
+		new_node->children.push_back(parse_expression());
 	}
-	else syntax_error_protocol();
 	
 	proceed(token_right_paren);
 	

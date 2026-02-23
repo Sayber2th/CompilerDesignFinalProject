@@ -16,6 +16,10 @@ enum node_kind : std::uint8_t
 	node_identifier,
 	node_string_literal,
 	node_integer_literal,
+	node_add,
+	node_subtract,
+	node_multiply,
+	node_divide
 };
 
 struct ast_node
@@ -24,6 +28,8 @@ struct ast_node
 	std::string value;
 	std::string data_type;
 	std::vector<ast_node*> children;
+	ast_node* lhs = nullptr;
+	ast_node* rhs = nullptr;
 };
 
 std::string node_kind_to_debug_string(node_kind kind);
@@ -54,6 +60,9 @@ public:
 	*/
 	ast_node* parse_declaration();
 	ast_node* parse_assignment();
+	ast_node* parse_expression();
+	ast_node* parse_term();
+	ast_node* parse_factor();
 	ast_node* parse_print_stmt();
 	
 	ast_node* parse_identifier();

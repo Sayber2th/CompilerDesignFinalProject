@@ -309,6 +309,26 @@ std::vector<token *> lexer::tokenize()
 				tokens.push_back(tokenize_special(token_quotes_double));
 				break;
 			}
+			case '+':
+			{
+				tokens.push_back(tokenize_special(token_plus));
+				break;
+			}
+			case '-':
+			{
+				tokens.push_back(tokenize_special(token_minus));
+				break;
+			}
+			case '*':
+			{
+				tokens.push_back(tokenize_special(token_star));
+				break;
+			}
+			case '/':
+			{
+				tokens.push_back(tokenize_special(token_slash));
+				break;
+			}
 			case 0:
 			{
 				tokens.push_back(tokenize_special(token_eof));
