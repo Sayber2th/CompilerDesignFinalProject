@@ -7,39 +7,26 @@
 enum token_type : std::uint8_t;
 struct token;
 
-enum node_type : std::uint8_t
+enum node_kind : std::uint8_t
 {
-	node_root,
-	node_return,
-	node_print,
-	node_int,
-	node_string,
+	node_program,
+	node_declaration,
+	node_assignment,
+	node_print_stmt,
 	node_identifier,
-	node_keyword_int,
-	node_keyword_string
-};
-
-enum expression_type : std::uint8_t
-{
-	expression_declaration_only,
-	expression_declaration_and_assigment,
-	expression_assigment,
-	expression_return,
-	expression_print
+	node_string_literal,
+	node_integer_literal,
 };
 
 struct ast_node
 {
-	node_type type;
-	node_type node_type_check;
-	expression_type expression_type;
-	std::string* value = nullptr;
-	ast_node* child;
-	std::vector<ast_node*> sub_statements;
+	node_kind kind;
+	std::string value;
+	std::string data_type;
+	std::vector<ast_node*> children;
 };
 
-std::string node_type_to_string(enum node_type type);
-std::string expression_type_to_string(enum expression_type type);
+std::string node_kind_to_debug_string(node_kind kind);
 
 class parser
 {
@@ -53,12 +40,23 @@ public:
 		
 	}
 
+	
+	[[noreturn]] void syntax_error_protocol() const;
 	static void raise_error_syntax(token_type token_type, const std::string& token_value, int line_number, int character_number); //improve the formatting for this later
-	static void print_abstract_syntax_tree(const ast_node*& root);
+
+	static void print_node(const ast_node* node, const std::string& prefix, bool is_last);
+	static void print_abstract_syntax_tree(const ast_node*& program);
 	
 	token* proceed(token_type type);
-	ast_node* parse_identifier(bool is_statement_beginning = false);
-	ast_node* parse_keyword();
+	
+	/*
+	*Parse statement types
+	*/
+	ast_node* parse_declaration();
+	ast_node* parse_assignment();
+	ast_node* parse_print_stmt();
+	
+	ast_node* parse_identifier();
 	
 	/*
 	*Parse data types
@@ -66,15 +64,7 @@ public:
 	ast_node* parse_integer();
 	ast_node* parse_string();
 	
-	/*
-	*Parse keyword types
-	*/
-	ast_node* parse_keyword_int();
-	ast_node* parse_keyword_string();
-	ast_node* parse_keyword_return();
-	ast_node* parse_keyword_print();
-	
-	ast_node* parse();
+	ast_node* parse_program();
 
 private:
 	std::vector<token*> parser_tokens_;

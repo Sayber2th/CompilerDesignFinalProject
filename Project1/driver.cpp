@@ -9,9 +9,11 @@
 #include <sstream>
 #include <vector>
 #include <cstdlib>
+#include <windows.h>
 
 int main(const int argc, char* argv[])
 {
+	SetConsoleOutputCP(CP_UTF8);
 	const std:: string source_code = try_read_file(argc, argv);
 	std::cout << "\nContent of source file:" << '\n' << source_code << '\n'; //debug
 
@@ -26,13 +28,13 @@ int main(const int argc, char* argv[])
 	 *Syntax Analysis
 	 */
 	parser parser(tokens);
-	const ast_node* root = parser.parse();
-	parser::print_abstract_syntax_tree(root); //Debug
+	const ast_node* program = parser.parse_program();
+	parser::print_abstract_syntax_tree(program); //Debug
 	
 	/*
 	 *Semantic Analysis
 	 */
-	semantic_analyzer semantic_analyzer(root);
+	semantic_analyzer semantic_analyzer(program);
 	semantic_analyzer.analyse();
 	semantic_analyzer.print_symbol_table(); //Debug
 	
