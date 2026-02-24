@@ -1,23 +1,24 @@
-﻿Nova CFG
-WORK IN PROGRESS!
+﻿Program → Statement Program | ε
 
-<source> -> <statement>*
-<statement> -> <declaration> ; | <assignment> ; | RETURN <expression> ; | PRINT <expression> ;
-<declaration> -> <keyword> <id> = <expression>
-<assignment> -> <id> = <expression>
-<id> -> <alnum>
-<alnum> -> (_ + <letter>)^+ (<letter>^* <number>^*)^*
-<letter> -> a|b|c|...|z
-<number> -> 
-<expression> -> int | string | id
+Statement → "int" Identifier Initializer ";"
+          | "string" Identifier Initializer ";"
+          | Identifier "=" InitValue ";"
+          | "print" "(" InitValue ")" ";"
 
-<syntax> -> <production> <syntax> | ε
-<production> -> <identifier> "=" <expression> ; | <keyword> | ε
+Initializer → "=" InitValue | ε
 
-substatements--
-               |
-                 -declaration_with_assignment
-                 -declaration_without_assignment
-                 -assignment
-                 -predefined functions
-                 -
+InitValue → StringLiteral | Expression
+
+Expression → Term Expression'
+Expression' → "+" Term Expression'
+            | "-" Term Expression'
+            | ε
+
+Term → Factor Term'
+Term' → "*" Factor Term'
+      | "/" Factor Term'
+      | ε
+
+Factor → Identifier
+       | IntegerLiteral
+       | "(" Expression ")"
