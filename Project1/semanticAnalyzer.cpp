@@ -14,11 +14,8 @@ void semantic_analyzer::analyse()
             if (node->children.size() > 1)
             {
                 const ast_node* rhs = node->children[1];
-
-                validate_expression_identifiers(rhs);
-
+                
                 const std::string rhs_type = infer_expression_type(rhs);
-
                 const std::string& declared_type = node->data_type;
                 const std::string& var_name = node->children[0]->value;
 
@@ -37,13 +34,12 @@ void semantic_analyzer::analyse()
         
         if (node->kind == node_assignment)
         {
-            check_identifier_declaration_before_reference(node);
             perform_type_check(node);
         }
         
         if (node->kind == node_print_stmt)
         {
-            validate_expression_identifiers(node->children[0]);
+            infer_expression_type(node->children[0]);
         }
     }
 }
@@ -64,27 +60,21 @@ void semantic_analyzer::track_declared_identifiers(const ast_node* node)
         exit(1);
     }
 
-    declared_identifiers_.insert({name, node->data_type});
+    symbol_info info;
+    info.type = node->data_type;
+
+    // initialized ONLY if declaration had initializer
+    info.initialized = (node->children.size() > 1);
+
+    declared_identifiers_.insert({name, info});
 }
 
-void semantic_analyzer::check_identifier_declaration_before_reference(const ast_node* node) const
-{
-    if (!is_declared(node->children[0]->value))
-    {
-        std::cerr<< "\nVariable must be declared before usage: " << node->children[0]->value << '\n';
-        exit(1);
-    }
-}
-
-void semantic_analyzer::perform_type_check(const ast_node* node) const
+void semantic_analyzer::perform_type_check(const ast_node* node)
 {
     const std::string& var_name = node->children[0]->value;
-    const std::string declared_type = declared_identifiers_.at(var_name);
+    const std::string declared_type = declared_identifiers_.at(var_name).type;
 
     const ast_node* rhs = node->children[1];
-
-    validate_expression_identifiers(rhs);
-
     const std::string rhs_type = infer_expression_type(rhs);
 
     if (declared_type != rhs_type)
@@ -95,17 +85,22 @@ void semantic_analyzer::perform_type_check(const ast_node* node) const
                   << "Expression type: " << rhs_type << '\n';
         exit(1);
     }
+    
+    declared_identifiers_.at(var_name).initialized = true;
 }
 
 void semantic_analyzer::print_symbol_table() const
 {
     std::cout << "\nSymbol Table: " << '\n';
     size_t counter = declared_identifiers_.size();
-    for (const auto& [symbol, type] :declared_identifiers_)
+    for (const auto& [symbol, info] : declared_identifiers_)
     {
-        counter --;
-        std::cout << declared_identifiers_.size() - counter << ")" 
-        << "Symbol: " << symbol << " | Type: " << type << '\n';
+        counter--;
+        std::cout << declared_identifiers_.size() - counter << ") "
+                  << "Symbol: " << symbol
+                  << " | Type: " << info.type
+                  << " | Initialized: " << (info.initialized ? "yes" : "no")
+                  << '\n';
     }
 }
 
@@ -127,7 +122,16 @@ std::string semantic_analyzer::infer_expression_type(const ast_node* node) const
                           << node->value << '\n';
                 exit(1);
             }
-            return declared_identifiers_.at(node->value);
+            const auto& info = declared_identifiers_.at(node->value);
+
+            if (!info.initialized)
+            {
+                std::cerr << "Variable used before initialization: "
+                          << node->value << '\n';
+                exit(1);
+            }
+
+            return info.type;
         }
 
     case node_add:
@@ -150,24 +154,5 @@ std::string semantic_analyzer::infer_expression_type(const ast_node* node) const
     default:
         std::cerr << "Unknown expression node during semantic analysis\n";
         exit(1);
-    }
-}
-
-void semantic_analyzer::validate_expression_identifiers(const ast_node* node) const
-{
-    if (node->kind == node_identifier)
-    {
-        if (!is_declared(node->value))
-        {
-            std::cerr << "Variable must be declared before usage: "
-                      << node->value << '\n';
-            exit(1);
-        }
-        return;
-    }
-
-    for (const ast_node* child : node->children)
-    {
-        validate_expression_identifiers(child);
     }
 }

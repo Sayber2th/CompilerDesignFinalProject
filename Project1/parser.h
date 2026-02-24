@@ -41,10 +41,7 @@ public:
 		parser_tokens_(tokens),
 		index_(0),
 		limit_(parser_tokens_.size()),
-		current_(parser_tokens_.at(index_))
-	{
-		
-	}
+		current_(parser_tokens_.at(index_)) {}
 
 	
 	[[noreturn]] void syntax_error_protocol() const;

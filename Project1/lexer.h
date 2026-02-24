@@ -52,10 +52,7 @@ public:
 		size_(source_code.length()),
 		current_(source_code.at(cursor_)),
 		line_number_(1),
-		character_number_(1)
-	{
-		
-	}
+		character_number_(1) {}
 
 	[[nodiscard]] char peek(int offset) const;
 	char advance();
