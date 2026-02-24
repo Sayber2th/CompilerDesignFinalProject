@@ -2,6 +2,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "semanticAnalyzer.h"
+#include "tacGenerator.h"
 
 #include <string>
 #include <fstream>
@@ -37,6 +38,13 @@ int main(const int argc, char* argv[])
 	semantic_analyzer semantic_analyzer(program);
 	semantic_analyzer.analyse();
 	semantic_analyzer.print_symbol_table(); //Debug
+	
+	/*
+	 *Three Address Code Generation
+	 */
+	tac_generator tac(program);
+	tac.generate();
+	tac.print();
 	
 	return 0;
 }

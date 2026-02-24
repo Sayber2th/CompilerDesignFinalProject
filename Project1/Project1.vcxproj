@@ -23,12 +23,14 @@
     <ClCompile Include="lexer.cpp" />
     <ClCompile Include="parser.cpp" />
     <ClCompile Include="semanticAnalyzer.cpp" />
+    <ClCompile Include="tacGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="driver.h" />
     <ClInclude Include="lexer.h" />
     <ClInclude Include="parser.h" />
     <ClInclude Include="semanticAnalyzer.h" />
+    <ClInclude Include="tacGenerator.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ContextFreeGrammar.txt" />
