@@ -23,6 +23,7 @@ std::string node_kind_to_debug_string(const node_kind kind)
 	case node_subtract: return "Subtract";
 	case node_multiply: return "Multiply";
 	case node_divide: return "Divide";
+	case node_unary_minus: return "Unary minus";
 	default: return "Unrecognized node type";  // NOLINT(clang-diagnostic-covered-switch-default)
 	}
 }
@@ -188,11 +189,20 @@ ast_node* parser::parse_term()
 
 ast_node* parser::parse_factor()
 {
-	if (current_->type == token_int)
-		return parse_integer();
+	if (current_->type == token_minus)
+	{
+		proceed(token_minus);
 
-	if (current_->type == token_identifier)
-		return parse_identifier();
+		auto* node = new ast_node;
+		node->kind = node_unary_minus;
+		node->children.push_back(parse_factor());
+
+		return node;
+	}
+	
+	if (current_->type == token_int) return parse_integer();
+
+	if (current_->type == token_identifier) return parse_identifier();
 
 	if (current_->type == token_left_paren)
 	{

@@ -19,7 +19,8 @@ enum node_kind : std::uint8_t
 	node_add,
 	node_subtract,
 	node_multiply,
-	node_divide
+	node_divide,
+	node_unary_minus
 };
 
 struct ast_node

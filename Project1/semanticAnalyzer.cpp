@@ -158,6 +158,19 @@ std::string semantic_analyzer::infer_expression_type(const ast_node* node) const
 
             return "int";
         }
+        
+    case node_unary_minus:
+        {
+            const std::string inner = infer_expression_type(node->children[0]);
+
+            if (inner != "int")
+            {
+                std::cerr << "Unary minus only allowed on integers\n";
+                exit(1);
+            }
+
+            return "int";
+        }
 
     default:
         std::cerr << "\nUnknown expression node during semantic analysis\n";
