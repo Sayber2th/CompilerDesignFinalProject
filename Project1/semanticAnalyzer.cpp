@@ -56,7 +56,7 @@ void semantic_analyzer::track_declared_identifiers(const ast_node* node)
 
     if (is_declared(name))
     {
-        std::cerr << "Variable already declared: " << name << '\n';
+        std::cerr << "\nVariable already declared: " << name << '\n';
         exit(1);
     }
 
@@ -72,6 +72,14 @@ void semantic_analyzer::track_declared_identifiers(const ast_node* node)
 void semantic_analyzer::perform_type_check(const ast_node* node)
 {
     const std::string& var_name = node->children[0]->value;
+    
+    if (!is_declared(var_name))
+    {
+        std::cerr << "\nVariable must be declared before assignment: "
+                  << var_name << '\n';
+        exit(1);
+    }
+    
     const std::string declared_type = declared_identifiers_.at(var_name).type;
 
     const ast_node* rhs = node->children[1];
@@ -118,7 +126,7 @@ std::string semantic_analyzer::infer_expression_type(const ast_node* node) const
         {
             if (!is_declared(node->value))
             {
-                std::cerr << "Variable must be declared before usage: "
+                std::cerr << "\nVariable must be declared before usage: "
                           << node->value << '\n';
                 exit(1);
             }
@@ -126,7 +134,7 @@ std::string semantic_analyzer::infer_expression_type(const ast_node* node) const
 
             if (!info.initialized)
             {
-                std::cerr << "Variable used before initialization: "
+                std::cerr << "\nVariable used before initialization: "
                           << node->value << '\n';
                 exit(1);
             }
@@ -144,7 +152,7 @@ std::string semantic_analyzer::infer_expression_type(const ast_node* node) const
 
             if (left != "int" || right != "int")
             {
-                std::cerr << "Arithmetic only allowed on integers\n";
+                std::cerr << "\nArithmetic only allowed on integers\n";
                 exit(1);
             }
 
@@ -152,7 +160,7 @@ std::string semantic_analyzer::infer_expression_type(const ast_node* node) const
         }
 
     default:
-        std::cerr << "Unknown expression node during semantic analysis\n";
+        std::cerr << "\nUnknown expression node during semantic analysis\n";
         exit(1);
     }
 }

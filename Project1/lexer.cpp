@@ -114,7 +114,7 @@ token* lexer::tokenize_keyword_or_identifier()
 	std::stringstream buffer;
 	buffer << advance();
 
-	while (isalpha(current_) || current_ == '_')
+	while (isalnum(current_) || current_ == '_')
 	{
 		buffer << advance();
 	}
@@ -149,26 +149,19 @@ token* lexer::tokenize_special(const token_type type)
 	const auto new_token = new token();
 	new_token->line_number = line_number_;
 	new_token->character_number = character_number_;
-	new_token->type = type;
 	
-	const bool is_double_char_special = (
-		std::find(double_character_specials.begin(), double_character_specials.end(), peek(-1)  // NOLINT(modernize-use-ranges)
-		) != double_character_specials.end());
-	
-	
-	if (peek(-1) != ' ' && is_double_char_special && current_ == '=')
-	{
-		//('==', '!=', '<=', '>=')
-		std::stringstream buffer;
-		buffer << peek(-1);
-		buffer << advance();
+	std::stringstream buffer;
+	const char first = advance();     // consume the current character
+	buffer << first;
 
-		new_token->value = buffer.str();
-	}
-	else
+	// handle double-character relational operators
+	if ((first == '=' || first == '!' || first == '<' || first == '>') && current_ == '=')
 	{
-		new_token->value = std::string(1, advance());
+		buffer << advance();    // consume '='
 	}
+
+	new_token->type = type;
+	new_token->value = buffer.str();
 
 	return new_token;
 }
@@ -229,58 +222,50 @@ std::vector<token *> lexer::tokenize()
 			{
 				if (peek(1) == '=')
 				{
-					advance();
 					tokens.push_back(tokenize_special(token_rel_equals));
-					break;
 				}
 				else
 				{
 					tokens.push_back(tokenize_special(token_equals));
-					break;
 				}
+				break;
 			}
 			case '!':
 			{
 				if (peek(1) == '=')
 				{
-					advance();
 					tokens.push_back(tokenize_special(token_rel_notequals));
-					break;
 				}
 				else
 				{
-					advance();
 					raise_error_unidentified_symbol();
 					exit(1);
 				}
+				break;
 			}
 			case '<':
 			{
 				if (peek(1) == '=')
 				{
-					advance();
 					tokens.push_back(tokenize_special(token_rel_lessthanequals));
-					break;
 				}
 				else
 				{
 					tokens.push_back(tokenize_special(token_rel_lessthan));
-					break;
 				}
+				break;
 			}
 			case '>':
 			{
 				if (peek(1) == '=')
 				{
-					advance();
 					tokens.push_back(tokenize_special(token_rel_greaterthanequals));
-					break;
 				}
 				else
 				{
 					tokens.push_back(tokenize_special(token_rel_greaterthan));
-					break;
 				}
+				break;
 			}
 			case '(':
 			{
