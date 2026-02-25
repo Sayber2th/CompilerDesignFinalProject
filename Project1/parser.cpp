@@ -1,12 +1,10 @@
 #include "parser.h"
-
-#include <csignal>
-
 #include "lexer.h"
 
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <csignal>
 
 std::string node_kind_to_debug_string(const node_kind kind)
 {

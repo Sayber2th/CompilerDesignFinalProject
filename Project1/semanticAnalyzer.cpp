@@ -3,6 +3,7 @@
 #include "parser.h"
 
 #include <iostream>
+#include <cstdlib>
 
 void semantic_analyzer::analyse()
 {

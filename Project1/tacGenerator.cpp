@@ -2,6 +2,7 @@
 #include "parser.h"
 
 #include <iostream>
+#include <cstdlib>
 
 std::string tac_generator::new_temp()
 {

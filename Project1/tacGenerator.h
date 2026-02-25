@@ -9,11 +9,12 @@ struct ast_node;
 class tac_generator
 {
 public:
-    explicit tac_generator(const ast_node* program)
-        : program_(program) {}
+    explicit tac_generator(const ast_node* program):
+        program_(program) {}
 
     void generate();
     void print() const;
+    [[nodiscard]] const std::vector<std::string>& get_code() const { return code_; }
 
 private:
     const ast_node* program_;
