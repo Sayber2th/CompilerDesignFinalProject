@@ -188,11 +188,20 @@ ast_node* parser::parse_term()
 
 ast_node* parser::parse_factor()
 {
-	if (current_->type == token_int)
-		return parse_integer();
+	if (current_->type == token_minus)
+	{
+		proceed(token_minus);
 
-	if (current_->type == token_identifier)
-		return parse_identifier();
+		auto* node = new ast_node;
+		node->kind = node_unary_minus;
+		node->children.push_back(parse_factor());
+
+		return node;
+	}
+	
+	if (current_->type == token_int) return parse_integer();
+
+	if (current_->type == token_identifier) return parse_identifier();
 
 	if (current_->type == token_left_paren)
 	{

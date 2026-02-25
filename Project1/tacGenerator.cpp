@@ -41,6 +41,16 @@ std::string tac_generator::gen_expression(const ast_node* node)
 
             return temp;
         }
+        
+    case node_unary_minus:
+        {
+            const std::string val = gen_expression(node->children[0]);
+            std::string temp = new_temp();
+
+            code_.push_back(temp + " = uminus " + val);
+
+            return temp;
+        }
 
     default:
         std::cerr << "Unsupported expression node in TAC\n";
