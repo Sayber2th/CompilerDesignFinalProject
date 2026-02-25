@@ -2,6 +2,8 @@ int a = 10 + 5;
 string b = "testing";
 int c = a * 4 + 5;
 string d;
+int e;
+e = (5 + 6) * a;
 d = "given value later";
 print("display this string");
 print(a);

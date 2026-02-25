@@ -130,17 +130,16 @@ ast_node* parser::parse_assignment()
 	
 	proceed(token_equals);
 	
-	if (current_->type == token_int)
-	{
-		new_node->children.push_back(parse_integer());
-	}
-	else if (current_->type == token_quotes_double)
+	if (current_->type == token_quotes_double)
 	{
 		proceed(token_quotes_double);
 		new_node->children.push_back(parse_string());
 		proceed(token_quotes_double);
 	}
-	else syntax_error_protocol();
+	else
+	{
+		new_node->children.push_back(parse_expression());
+	}
 	
 	return new_node;
 }
