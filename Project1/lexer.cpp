@@ -62,8 +62,8 @@ void lexer::print_scanned_tokens(const std::vector<token*>& tokens)
 	for (const token* temp : tokens)
 	{
 		counter_tokens ++;
-		std::cout << counter_tokens << ")" << "Type: " << token_type_to_string(temp->type) << " | " 
-		<< "Value: " << temp->value << '\n';
+		std::cout << counter_tokens << ")" << "Token: " << temp->value << " | " 
+		<< "Type: " << token_type_to_debug_string(temp->type) << '\n';
 	}
 }
 
@@ -102,6 +102,39 @@ std::string token_type_to_string(const enum token_type type)
 	case token_if: return "token_if";
 	case token_else: return "token_else";
 	case token_eof: return "token_eof";
+	default: return "Unrecognised token";  // NOLINT(clang-diagnostic-covered-switch-default)
+	}
+}
+
+std::string token_type_to_debug_string(enum token_type type)
+{
+	switch (type)
+	{
+	case token_identifier: return "identifier";
+	case token_int: return "integer literal";
+	case token_quotes_double: return "double quotes";	
+	case token_equals: return "equals";
+	case token_keyword: return "keyword";
+	case token_semicolon: return "semicolon";
+	case token_left_paren: return "left parenthesis";
+	case token_right_paren: return "right parenthesis";
+	case token_left_curly: return "left curly bracket";
+	case token_right_curly: return "right curly bracket";
+	case token_comma: return "comma";
+	case token_string: return "string literal";	
+	case token_rel_equals: return "relational equals to";
+	case token_rel_notequals: return "relational not equals to";
+	case token_rel_lessthan: return "relational less than";
+	case token_rel_lessthanequals: return "relational less than equals to";
+	case token_rel_greaterthan: return "relational greater than";
+	case token_rel_greaterthanequals: return "relational greater than equals to";
+	case token_plus: return "plus";
+	case token_minus: return "minus";
+	case token_star: return "asterisk";
+	case token_slash: return "back slash";
+	case token_if: return "if keyword";
+	case token_else: return "else keyword";
+	case token_eof: return "end of file token";
 	default: return "Unrecognised token";  // NOLINT(clang-diagnostic-covered-switch-default)
 	}
 }

@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <windows.h>
 
+#include "tacInterpreter.h"
+
 int main(const int argc, char* argv[])
 {
 	SetConsoleOutputCP(CP_UTF8);
@@ -45,6 +47,9 @@ int main(const int argc, char* argv[])
 	tac_generator tac(program);
 	tac.generate();
 	tac.print();
+	
+	tac_interpreter interpreter(tac.get_code());
+	interpreter.run();
 	
 	return 0;
 }
