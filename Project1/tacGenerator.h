@@ -13,7 +13,7 @@ public:
         program_(program) {}
 
     void generate();
-    void print() const;
+    void print_raw_tac() const;
     [[nodiscard]] const std::vector<std::string>& get_code() const { return code_; }
 
 private:

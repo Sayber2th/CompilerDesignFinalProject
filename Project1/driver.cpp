@@ -3,6 +3,8 @@
 #include "parser.h"
 #include "semanticAnalyzer.h"
 #include "tacGenerator.h"
+#include "tacInterpreter.h"
+#include "tacOptimizer.h"
 
 #include <string>
 #include <fstream>
@@ -10,8 +12,6 @@
 #include <sstream>
 #include <vector>
 #include <windows.h>
-
-#include "tacInterpreter.h"
 
 int main(const int argc, char* argv[])
 {
@@ -45,9 +45,19 @@ int main(const int argc, char* argv[])
 	 */
 	tac_generator tac(program);
 	tac.generate();
-	tac.print();
+	tac.print_raw_tac();
 	
-	tac_interpreter interpreter(tac.get_code());
+	/*
+	 *Three Address Code Optimisation
+	 */
+	tac_optimizer optimizer(tac.get_code());
+	optimizer.optimize();
+	optimizer.print_optimised_tac();
+	
+	/*
+	 *Three Address Code Execution
+	 */
+	tac_interpreter interpreter(optimizer.get_optimized_code());
 	interpreter.run();
 	
 	return 0;

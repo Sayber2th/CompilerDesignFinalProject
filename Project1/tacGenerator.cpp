@@ -106,9 +106,9 @@ void tac_generator::generate()
     }
 }
 
-void tac_generator::print() const
+void tac_generator::print_raw_tac() const
 {
-    std::cout << "\nGenerated TAC:\n";
+    std::cout << "\nGenerated Unoptimized TAC:\n";
     for (const auto& line : code_)
         std::cout << line << '\n';
 }

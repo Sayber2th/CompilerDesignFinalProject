@@ -25,6 +25,7 @@
     <ClCompile Include="semanticAnalyzer.cpp" />
     <ClCompile Include="tacGenerator.cpp" />
     <ClCompile Include="tacInterpreter.cpp" />
+    <ClCompile Include="tacOptimizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="driver.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="semanticAnalyzer.h" />
     <ClInclude Include="tacGenerator.h" />
     <ClInclude Include="tacInterpreter.h" />
+    <ClInclude Include="tacOptimizer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ContextFreeGrammar.txt" />
