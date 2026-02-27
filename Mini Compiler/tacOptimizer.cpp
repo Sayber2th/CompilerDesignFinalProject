@@ -89,7 +89,15 @@ void tac_optimizer::constant_folding()
                 if (op == "+") result = x + y;
                 else if (op == "-") result = x - y;
                 else if (op == "*") result = x * y;
-                else if (op == "/") result = y != 0 ? x / y : 0;
+                else if (op == "/")
+                {
+                    if (y == 0)
+                    {
+                        std::cerr << "Runtime error: division by zero\n";
+                        exit(1);
+                    }
+                    result = x/y;
+                }
 
                 line = lhs + " = " + std::to_string(result);
             }

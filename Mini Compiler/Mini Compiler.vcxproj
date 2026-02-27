@@ -41,6 +41,7 @@
     <Text Include="test.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="runtimeerror.txt" />
     <Content Include="typechecktest.txt" />
     <Content Include="usedbeforedeclarationtest.txt" />
   </ItemGroup>
