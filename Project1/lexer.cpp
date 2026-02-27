@@ -85,16 +85,7 @@ std::string token_type_to_string(const enum token_type type)
 	case token_semicolon: return "token_semicolon";
 	case token_left_paren: return "token_left_paren";
 	case token_right_paren: return "token_right_paren";
-	case token_left_curly: return "token_left_curly";
-	case token_right_curly: return "token_right_curly";
-	case token_comma: return "token_comma";
-	case token_string: return "token_string";	
-	case token_rel_equals: return "token_rel_equals";
-	case token_rel_notequals: return "token_rel_notequals";
-	case token_rel_lessthan: return "token_rel_lessthan";
-	case token_rel_lessthanequals: return "token_rel_lessthanequals";
-	case token_rel_greaterthan: return "token_rel_greaterthan";
-	case token_rel_greaterthanequals: return "token_rel_greaterthanequals";
+	case token_string: return "token_string";
 	case token_plus: return "token_plus";
 	case token_minus: return "token_minus";
 	case token_star: return "token_star";
@@ -118,16 +109,7 @@ std::string token_type_to_debug_string(enum token_type type)
 	case token_semicolon: return "semicolon";
 	case token_left_paren: return "left parenthesis";
 	case token_right_paren: return "right parenthesis";
-	case token_left_curly: return "left curly bracket";
-	case token_right_curly: return "right curly bracket";
-	case token_comma: return "comma";
-	case token_string: return "string literal";	
-	case token_rel_equals: return "relational equals to";
-	case token_rel_notequals: return "relational not equals to";
-	case token_rel_lessthan: return "relational less than";
-	case token_rel_lessthanequals: return "relational less than equals to";
-	case token_rel_greaterthan: return "relational greater than";
-	case token_rel_greaterthanequals: return "relational greater than equals to";
+	case token_string: return "string literal";
 	case token_plus: return "plus";
 	case token_minus: return "minus";
 	case token_star: return "asterisk";
@@ -182,19 +164,8 @@ token* lexer::tokenize_special(const token_type type)
 	const auto new_token = new token();
 	new_token->line_number = line_number_;
 	new_token->character_number = character_number_;
-	
-	std::stringstream buffer;
-	const char first = advance();     // consume the current character
-	buffer << first;
-
-	// handle double-character relational operators
-	if ((first == '=' || first == '!' || first == '<' || first == '>') && current_ == '=')
-	{
-		buffer << advance();    // consume '='
-	}
-
 	new_token->type = type;
-	new_token->value = buffer.str();
+	new_token->value = advance();
 
 	return new_token;
 }
@@ -253,51 +224,7 @@ std::vector<token *> lexer::tokenize()
 			}
 			case '=':
 			{
-				if (peek(1) == '=')
-				{
-					tokens.push_back(tokenize_special(token_rel_equals));
-				}
-				else
-				{
-					tokens.push_back(tokenize_special(token_equals));
-				}
-				break;
-			}
-			case '!':
-			{
-				if (peek(1) == '=')
-				{
-					tokens.push_back(tokenize_special(token_rel_notequals));
-				}
-				else
-				{
-					raise_error_unidentified_symbol();
-					exit(1);
-				}
-				break;
-			}
-			case '<':
-			{
-				if (peek(1) == '=')
-				{
-					tokens.push_back(tokenize_special(token_rel_lessthanequals));
-				}
-				else
-				{
-					tokens.push_back(tokenize_special(token_rel_lessthan));
-				}
-				break;
-			}
-			case '>':
-			{
-				if (peek(1) == '=')
-				{
-					tokens.push_back(tokenize_special(token_rel_greaterthanequals));
-				}
-				else
-				{
-					tokens.push_back(tokenize_special(token_rel_greaterthan));
-				}
+				tokens.push_back(tokenize_special(token_equals));
 				break;
 			}
 			case '(':
@@ -308,16 +235,6 @@ std::vector<token *> lexer::tokenize()
 			case ')':
 			{
 				tokens.push_back(tokenize_special(token_right_paren));
-				break;
-			}
-			case '{':
-			{
-				tokens.push_back(tokenize_special(token_left_curly));
-				break;
-			}
-			case '}':
-			{
-				tokens.push_back(tokenize_special(token_right_curly));
 				break;
 			}
 			case '"':

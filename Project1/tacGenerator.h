@@ -14,11 +14,11 @@ public:
 
     void generate();
     void print_raw_tac() const;
-    [[nodiscard]] const std::vector<std::string>& get_code() const { return code_; }
+    [[nodiscard]] const std::vector<std::string>& get_tac() const { return tac_; }
 
 private:
     const ast_node* program_;
-    std::vector<std::string> code_;
+    std::vector<std::string> tac_;
     int temp_counter_ = 0;
 
     std::string new_temp();

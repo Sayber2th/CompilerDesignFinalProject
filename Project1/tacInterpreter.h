@@ -15,13 +15,13 @@ struct value
 class tac_interpreter
 {
 public:
-    explicit tac_interpreter(const std::vector<std::string>& code):
-        code_(code) {}
+    explicit tac_interpreter(const std::vector<std::string>& tac):
+        tac_(tac) {}
 
     void run();
 
 private:
-    std::vector<std::string> code_;
+    std::vector<std::string> tac_;
     std::unordered_map<std::string, value> memory_;
     std::vector<std::string> output_buffer_;
 

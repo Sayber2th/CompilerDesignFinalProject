@@ -50,7 +50,7 @@ int main(const int argc, char* argv[])
 	/*
 	 *Three Address Code Optimisation
 	 */
-	tac_optimizer optimizer(tac.get_code());
+	tac_optimizer optimizer(tac.get_tac());
 	optimizer.optimize();
 	optimizer.print_optimised_tac();
 	

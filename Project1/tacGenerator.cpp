@@ -6,7 +6,7 @@
 
 std::string tac_generator::new_temp()
 {
-    return "t" + std::to_string(++temp_counter_);
+    return "_t" + std::to_string(++temp_counter_);
 }
 
 std::string tac_generator::gen_expression(const ast_node* node)
@@ -38,7 +38,7 @@ std::string tac_generator::gen_expression(const ast_node* node)
             else if (node->kind == node_multiply) op = "*";
             else op = "/";
 
-            code_.push_back(temp + " = " + left + " " + op + " " + right);
+            tac_.push_back(temp + " = " + left + " " + op + " " + right);
 
             return temp;
         }
@@ -48,7 +48,7 @@ std::string tac_generator::gen_expression(const ast_node* node)
             const std::string val = gen_expression(node->children[0]);
             std::string temp = new_temp();
 
-            code_.push_back(temp + " = uminus " + val);
+            tac_.push_back(temp + " = uminus " + val);
 
             return temp;
         }
@@ -71,7 +71,7 @@ void tac_generator::gen_statement(const ast_node* node)
                 std::string rhs = gen_expression(node->children[1]);
                 std::string var = node->children[0]->value;
 
-                code_.push_back(var + " = " + rhs);
+                tac_.push_back(var + " = " + rhs);
             }
             break;
         }
@@ -81,14 +81,14 @@ void tac_generator::gen_statement(const ast_node* node)
             const std::string rhs = gen_expression(node->children[1]);
             const std::string var = node->children[0]->value;
 
-            code_.push_back(var + " = " + rhs);
+            tac_.push_back(var + " = " + rhs);
             break;
         }
 
     case node_print_stmt:
         {
             const std::string val = gen_expression(node->children[0]);
-            code_.push_back("print " + val);
+            tac_.push_back("print " + val);
             break;
         }
 
@@ -108,7 +108,11 @@ void tac_generator::generate()
 
 void tac_generator::print_raw_tac() const
 {
+    int counter = 0;
     std::cout << "\nGenerated Unoptimized TAC:\n";
-    for (const auto& line : code_)
-        std::cout << line << '\n';
+    for (const auto& line : tac_)
+    {
+        counter ++;
+        std::cout << counter << "] " << line << '\n';
+    }
 }

@@ -6,7 +6,7 @@
 void tac_interpreter::run()
 {
     std::cout << "\nOutput of the program:\n";
-    for (const auto& line : code_)
+    for (const auto& line : tac_)
         execute(line);
     
     for (const auto& out : output_buffer_)

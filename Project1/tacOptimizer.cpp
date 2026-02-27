@@ -15,16 +15,20 @@ void tac_optimizer::optimize()
 
 void tac_optimizer::print_optimised_tac() const
 {
+    int counter = 0;
     std::cout << "\nOptimized TAC:\n";
-    for (const auto& line : code_)
-        std::cout << line << '\n';
+    for (const auto& line : tac_optimised_)
+    {
+        counter ++;
+        std::cout << counter << "] " << line << '\n';
+    }
 }
 
 void tac_optimizer::constant_propagation()
 {
     std::unordered_map<std::string, std::string> constants;
 
-    for (auto& line : code_)
+    for (auto& line : tac_optimised_)
     {
         std::stringstream ss(line);
 
@@ -50,9 +54,12 @@ void tac_optimizer::constant_propagation()
         // Replace occurrences in RHS
         for (auto& [var, value] : constants)
         {
-            size_t pos = rhs.find(var);
-            if (pos != std::string::npos)
+            size_t pos = 0;
+            while ((pos = rhs.find(var, pos)) != std::string::npos)
+            {
                 rhs.replace(pos, var.length(), value);
+                pos += value.length();
+            }
         }
 
         line = lhs + " = " + rhs;
@@ -61,7 +68,7 @@ void tac_optimizer::constant_propagation()
 
 void tac_optimizer::constant_folding()
 {
-    for (auto& line : code_)
+    for (auto& line : tac_optimised_)
     {
         std::stringstream ss(line);
 
@@ -92,48 +99,62 @@ void tac_optimizer::constant_folding()
 
 void tac_optimizer::dead_code_elimination()
 {
-    std::unordered_set<std::string> used;
-    std::vector<std::string> new_code;
-
-    // First pass: collect used variables
-    for (const auto& line : code_)
+    while (true)
     {
-        if (line.rfind("print", 0) == 0)
-        {
-            std::stringstream ss(line);
-            std::string p, var;
-            ss >> p >> var;
-            used.insert(var);
-        }
-        else
-        {
-            std::stringstream ss(line);
-            std::string lhs, eq, rhs;
-            ss >> lhs >> eq;
-            std::getline(ss >> std::ws, rhs);
+        std::unordered_set<std::string> used;
+        std::vector<std::string> new_code;
 
-            std::stringstream rhs_stream(rhs);
-            std::string token;
-            while (rhs_stream >> token)
+        // First pass: collect used variables
+        for (const auto& line : tac_optimised_)
+        {
+            if (line.rfind("print", 0) == 0)
             {
-                if (!std::isdigit(token[0]) && token != "uminus")
-                    used.insert(token);
+                std::stringstream ss(line);
+                std::string p, var;
+                ss >> p >> var;
+                used.insert(var);
+            }
+            else
+            {
+                std::stringstream ss(line);
+                std::string lhs, eq, rhs;
+                ss >> lhs >> eq;
+                std::getline(ss >> std::ws, rhs);
+
+                std::stringstream rhs_stream(rhs);
+                std::string token;
+                while (rhs_stream >> token)
+                {
+                    bool is_number = std::all_of(token.begin(), token.end(), 
+                        [](char c) { return std::isdigit(c) || c == '-'; });
+
+                    if (!is_number && token != "uminus")
+                        used.insert(token);
+                }
             }
         }
+
+        bool removed_any = false;
+
+        // Second pass
+        for (const auto& line : tac_optimised_)
+        {
+            std::stringstream ss(line);
+            std::string lhs, eq;
+            ss >> lhs >> eq;
+
+            if (eq == "=" && !used.contains(lhs))
+            {
+                removed_any = true;
+                continue;
+            }
+
+            new_code.push_back(line);
+        }
+
+        tac_optimised_ = new_code;
+
+        if (!removed_any)
+            break;
     }
-
-    // Second pass: remove unused assignments
-    for (const auto& line : code_)
-    {
-        std::stringstream ss(line);
-        std::string lhs, eq;
-        ss >> lhs >> eq;
-
-        if (eq == "=" && !used.contains(lhs) && lhs[0] == 't')
-            continue;
-
-        new_code.push_back(line);
-    }
-
-    code_ = new_code;
 }
