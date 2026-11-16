@@ -69,8 +69,15 @@ void lexer::print_scanned_tokens(const std::vector<token*>& tokens)
 
 void lexer::raise_error_unidentified_symbol() const
 {
-	std::cout << "[!] TOKENIZATION ERROR : Unidentified symbol: " << current_ << " " << "at" << " ";
-	std::cout << "Line: " << line_number_ << " " << "Character: " << character_number_ << '\n';
+	const auto c = static_cast<unsigned char>(current_);
+
+	std::cout << "[!] TOKENIZATION ERROR : Unidentified symbol: ";
+	if (c >= 32 && c < 127)
+		std::cout << current_;
+	else
+		std::cout << "(byte value " << static_cast<int>(c) << ")";
+
+	std::cout << " at Line: " << line_number_ << " Character: " << character_number_ << '\n';
 }
 
 std::string token_type_to_string(const enum token_type type)
@@ -129,7 +136,7 @@ token* lexer::tokenize_keyword_or_identifier()
 	std::stringstream buffer;
 	buffer << advance();
 
-	while (isalnum(current_) || current_ == '_')
+	while (isalnum(static_cast<unsigned char>(current_)) || current_ == '_')
 	{
 		buffer << advance();
 	}
@@ -149,7 +156,7 @@ token* lexer::tokenize_integer()
 	std::stringstream buffer;
 	buffer << advance();
 
-	while (isdigit(current_))
+	while (isdigit(static_cast<unsigned char>(current_)))
 	{
 		buffer << advance();
 	}
@@ -179,6 +186,12 @@ token* lexer::tokenize_string()
 	
 	while (current_ != '"')
 	{
+		if (current_ == '\0' || current_ == '\n')
+		{
+			std::cout << "[!] TOKENIZATION ERROR : Unterminated string literal at Line: "
+					  << new_token->line_number << " Character: " << new_token->character_number << '\n';
+			exit(1);
+		}
 		buffer << advance();
 	}
 	
@@ -197,14 +210,14 @@ std::vector<token *> lexer::tokenize()
 		check_and_skip_whitespace();
 
 		//if token is keyword or identifier
-		if (isalpha(current_) || current_ == '_')
+		if (isalpha(static_cast<unsigned char>(current_)) || current_ == '_')
 		{
 			tokens.push_back(tokenize_keyword_or_identifier());
 			continue;
 		}
 		
 		//if token is integer
-		if (isdigit(current_))
+		if (isdigit(static_cast<unsigned char>(current_)))
 		{
 			tokens.push_back(tokenize_integer());
 			continue;
@@ -278,9 +291,9 @@ std::vector<token *> lexer::tokenize()
 		}
 	}
 	
-	if (tokens.back()->type != token_eof)
+	if (tokens.empty() || tokens.back()->type != token_eof)
 	{
-		const auto eof_token = new token;
+		const auto eof_token = new token();
 		eof_token->type = token_eof;
 		tokens.push_back(eof_token);
 	}

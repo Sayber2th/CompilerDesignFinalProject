@@ -109,7 +109,7 @@ void tac_generator::generate()
 void tac_generator::print_raw_tac() const
 {
     int counter = 0;
-    std::cout << "\nGenerated Unoptimized TAC:\n";
+    std::cout << "\nUnoptimized TAC:\n";
     for (const auto& line : tac_)
     {
         counter ++;

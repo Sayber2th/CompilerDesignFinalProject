@@ -151,9 +151,14 @@ std::string semantic_analyzer::infer_expression_type(const ast_node* node) const
             const std::string left  = infer_expression_type(node->children[0]);
             const std::string right = infer_expression_type(node->children[1]);
 
-            if (left != "int" || right != "int")
+            if (left != "int")
             {
-                std::cerr << "\nArithmetic only allowed on integers\n";
+                std::cerr << "\nArithmetic only allowed on integers: " << node->children[0]->value << '\n';
+                exit(1);
+            }
+            else if (right != "int")
+            {
+                std::cerr << "\nArithmetic only allowed on integers: " << node->children[1]->value << '\n';
                 exit(1);
             }
 

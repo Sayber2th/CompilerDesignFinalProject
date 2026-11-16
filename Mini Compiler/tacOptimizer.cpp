@@ -8,8 +8,14 @@
 
 void tac_optimizer::optimize()
 {
-    constant_propagation();
-    constant_folding();
+    std::vector<std::string> previous;
+    do
+    {
+        previous = tac_optimised_;
+        constant_propagation();
+        constant_folding();
+    } while (tac_optimised_ != previous);
+
     dead_code_elimination();
 }
 
@@ -22,6 +28,15 @@ void tac_optimizer::print_optimised_tac() const
         counter ++;
         std::cout << counter << "] " << line << '\n';
     }
+}
+
+static bool is_integer_literal(const std::string& s)
+{
+    if (s.empty()) return false;
+    const size_t start = (s[0] == '-') ? 1 : 0;
+    if (start == s.size()) return false;
+    return std::all_of(s.begin() + start, s.end(),
+        [](const unsigned char c){ return std::isdigit(c); });
 }
 
 void tac_optimizer::constant_propagation()
@@ -40,27 +55,27 @@ void tac_optimizer::constant_propagation()
         std::string rhs;
         std::getline(ss >> std::ws, rhs);
 
-        // Simple constant assignment
-        if (!rhs.empty() && std::all_of(rhs.begin(), rhs.end(),
-            [](const char c){ return std::isdigit(c) || c == '-'; }))
-        {
-            constants[lhs] = rhs;
-        }
-        else
+        // A string literal has nothing to propagate into
+        if (!rhs.empty() && rhs.front() == '"')
         {
             constants.erase(lhs);
+            continue;
         }
 
-        // Replace occurrences in RHS
-        for (auto& [var, value] : constants)
+        // Replace whole operands only, never substrings
+        std::stringstream rhs_stream(rhs);
+        std::string token, new_rhs;
+        while (rhs_stream >> token)
         {
-            size_t pos = 0;
-            while ((pos = rhs.find(var, pos)) != std::string::npos)
-            {
-                rhs.replace(pos, var.length(), value);
-                pos += value.length();
-            }
+            const auto it = constants.find(token);
+            if (!new_rhs.empty()) new_rhs += ' ';
+            new_rhs += (it != constants.end()) ? it->second : token;
         }
+        rhs = new_rhs;
+
+        // Record or forget lhs based on the updated rhs
+        if (is_integer_literal(rhs)) constants[lhs] = rhs;
+        else constants.erase(lhs);
 
         line = lhs + " = " + rhs;
     }
@@ -134,7 +149,7 @@ void tac_optimizer::dead_code_elimination()
                 while (rhs_stream >> token)
                 {
                     bool is_number = std::all_of(token.begin(), token.end(), 
-                        [](char c) { return std::isdigit(c) || c == '-'; });
+                        [](unsigned char c) { return std::isdigit(c) || c == '-'; });
 
                     if (!is_number && token != "uminus")
                         used.insert(token);

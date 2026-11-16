@@ -99,6 +99,21 @@ std::string try_read_file(const int argc, char* argv[])
 	}
 	
 	std::string source_code = read_file(argv[1]);
+	
+	// Skip a UTF-8 byte order mark, if present
+	if (source_code.size() >= 3 &&
+		static_cast<unsigned char>(source_code[0]) == 0xEF &&
+		static_cast<unsigned char>(source_code[1]) == 0xBB &&
+		static_cast<unsigned char>(source_code[2]) == 0xBF)
+	{
+		source_code.erase(0, 3);
+	}
+	
+	if (source_code.find_first_not_of(" \t\r\n") == std::string::npos)
+	{
+		std::cerr << "\nThe source file is empty. Please provide a file containing a program.";
+		exit(1);
+	}
 	source_code.append("\0");
 	
 	return source_code;
