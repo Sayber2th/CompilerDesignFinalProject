@@ -12,15 +12,15 @@ Source file -> Lexer -> Parser (AST) -> Semantic Analyzer -> TAC Generator -> TA
 
 | Phase | Files | What it does |
 |---|---|---|
-| Lexical analysis | `lexer.h`, `lexer.cpp` | Converts source text into tokens |
-| Syntax analysis | `parser.h`, `parser.cpp` | Builds an abstract syntax tree (AST) from the tokens |
-| Semantic analysis | `semanticAnalyzer.h`, `semanticAnalyzer.cpp` | Builds the symbol table and checks declarations and types |
-| Intermediate code generation | `tacGenerator.h`, `tacGenerator.cpp` | Generates Three-Address Code (TAC) from the AST |
-| Optimization | `tacOptimizer.h`, `tacOptimizer.cpp` | Applies constant propagation, constant folding, and dead code elimination to the TAC |
-| Execution | `tacInterpreter.h`, `tacInterpreter.cpp` | Runs the optimized TAC and produces the program's output |
-| Entry point | `driver.h`, `driver.cpp` | Reads the source file and runs each phase in order |
+| Lexical analysis | `src/lexer.h`, `src/lexer.cpp` | Converts source text into tokens |
+| Syntax analysis | `src/parser.h`, `src/parser.cpp` | Builds an abstract syntax tree (AST) from the tokens |
+| Semantic analysis | `src/semanticAnalyzer.h`, `src/semanticAnalyzer.cpp` | Builds the symbol table and checks declarations and types |
+| Intermediate code generation | `src/tacGenerator.h`, `src/tacGenerator.cpp` | Generates Three-Address Code (TAC) from the AST |
+| Optimization | `src/tacOptimizer.h`, `src/tacOptimizer.cpp` | Applies constant propagation, constant folding, and dead code elimination to the TAC |
+| Execution | `src/tacInterpreter.h`, `src/tacInterpreter.cpp` | Runs the optimized TAC and produces the program's output |
+| Entry point | `src/driver.h`, `src/driver.cpp` | Reads the source file and runs each phase in order |
 
-The grammar of the language is documented in `ContextFreeGrammar.txt`.
+The grammar of the language is documented in `docs/ContextFreeGrammar.txt`.
 
 ## The Language
 
@@ -34,14 +34,22 @@ The language looks like C++, with a `print` statement for output instead of `std
 
 ## Build and Run
 
-**Requirements:** Windows and Visual Studio (the project uses the Windows API to set the console to UTF-8, so it is Windows-only).
+**Requirements:** Windows, and either Visual Studio or JetBrains Rider with the MSVC Build Tools ("Desktop development with C++" workload). The project uses the Windows API to set the console to UTF-8, so it is Windows-only.
 
-1. Open `CompilerDesignFinalProject.sln` in Visual Studio.
-2. Build the `Mini Compiler` project (Build > Build Solution).
-3. Run the executable from a terminal, passing the path of a source file:
+1. Open `CompilerDesignFinalProject.sln` in Visual Studio or Rider.
+2. Build the `Mini Compiler` project (Build > Build Solution). The executable is created at `x64\Debug\Mini Compiler.exe` in the repository root.
+3. Run the executable from the repository root, passing the path of a source file.
+
+PowerShell:
 
 ```
-"Mini Compiler.exe" <source-file-path>
+& "x64\Debug\Mini Compiler.exe" "tests\test.txt"
+```
+
+Command Prompt:
+
+```
+"x64\Debug\Mini Compiler.exe" "tests\test.txt"
 ```
 
 The program takes exactly one argument: the path to the source file.
@@ -191,7 +199,7 @@ Root program node
 ├── Declaration statement | type: string
 │   ├── Identifier: d
 │   └── String literal: Hello
-├── Assigment statement
+├── Assignment statement
 │   ├── Identifier: c
 │   └── Add
 │       ├── Identifier: b
@@ -291,10 +299,10 @@ The compiler stops at the first error it finds and reports it.
 
 | Test file | What it contains | Result |
 |---|---|---|
-| `typechecktest.txt` | A string assigned to an `int` variable | `Data stored in the variable must match its declared type!` followed by the variable name, its declared type, and the expression type |
-| `usedbeforedeclarationtest.txt` | `print(d)` where `d` was never declared | `Variable must be declared before usage: d` |
-| `runtimeerror.txt` | `int c = a / b;` where `b` is `0` | `Runtime error: division by zero`, detected during constant folding before the program runs |
-| `emptyfiletest.txt` | A file with only spaces and newlines | `The source file is empty. Please provide a file containing a program.` |
+| `tests/typechecktest.txt` | A string assigned to an `int` variable | `Data stored in the variable must match its declared type!` followed by the variable name, its declared type, and the expression type |
+| `tests/usedbeforedeclarationtest.txt` | `print(d)` where `d` was never declared | `Variable must be declared before usage: d` |
+| `tests/runtimeerror.txt` | `int c = a / b;` where `b` is `0` | `Runtime error: division by zero`, detected during constant folding before the program runs |
+| `tests/emptyfiletest.txt` | A file with only spaces and newlines | `The source file is empty. Please provide a file containing a program.` |
 
 The lexer also reports errors with line and character positions, for example for an unterminated string literal, or for a symbol that is not part of the language (here, the first byte of a stray `é`):
 
@@ -314,13 +322,22 @@ Expression type: string
 
 ## Test Files
 
-The `Mini Compiler` folder includes these input files:
+The `tests` folder includes these input files:
 
 - `test.txt`: a sample program that runs successfully
 - `typechecktest.txt`: type mismatch error
 - `usedbeforedeclarationtest.txt`: undeclared variable error
 - `runtimeerror.txt`: division by zero
 - `emptyfiletest.txt`: an empty source file (spaces and newlines only)
+
+## Project Structure
+
+```
+CompilerDesignFinalProject/
+├── Mini Compiler/   Visual C++ project (the compiler source is in src/)
+├── tests/           Sample and error-case input programs
+└── docs/            Language grammar
+```
 
 ## Known Limitations
 

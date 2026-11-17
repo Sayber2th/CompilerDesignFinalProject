@@ -12,7 +12,7 @@ std::string node_kind_to_debug_string(const node_kind kind)
 	{
 	case node_program: return "Root program node";
 	case node_declaration: return "Declaration statement";
-	case node_assignment: return "Assigment statement";
+	case node_assignment: return "Assignment statement";
 	case node_print_stmt: return "Print statement";
 	case node_identifier: return "Identifier";
 	case node_string_literal: return "String literal";
