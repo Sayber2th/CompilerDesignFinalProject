@@ -35,30 +35,30 @@
       <UniqueIdentifier>{7608517e-f782-4332-9139-56ccdf54c9b0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="lexer.cpp">
-      <Filter>Lexer</Filter>
-    </ClCompile>
-    <ClCompile Include="driver.cpp">
-      <Filter>Driver</Filter>
-    </ClCompile>
-    <ClCompile Include="parser.cpp">
-      <Filter>Parser</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="lexer.h">
-      <Filter>Lexer</Filter>
-    </ClInclude>
-    <ClInclude Include="driver.h">
-      <Filter>Driver</Filter>
-    </ClInclude>
-    <ClInclude Include="parser.h">
-      <Filter>Parser</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="test.txt" />
-    <Text Include="ContextFreeGrammar.txt" />
-  </ItemGroup>
+    <ItemGroup>
+      <ClCompile Include="src\lexer.cpp">
+        <Filter>Lexer</Filter>
+      </ClCompile>
+      <ClCompile Include="src\driver.cpp">
+        <Filter>Driver</Filter>
+      </ClCompile>
+      <ClCompile Include="src\parser.cpp">
+        <Filter>Parser</Filter>
+      </ClCompile>
+    </ItemGroup>
+    <ItemGroup>
+      <ClInclude Include="src\lexer.h">
+        <Filter>Lexer</Filter>
+      </ClInclude>
+      <ClInclude Include="src\driver.h">
+        <Filter>Driver</Filter>
+      </ClInclude>
+      <ClInclude Include="src\parser.h">
+        <Filter>Parser</Filter>
+      </ClInclude>
+    </ItemGroup>
+    <ItemGroup>
+      <Text Include="..\tests\test.txt" />
+      <Text Include="..\docs\ContextFreeGrammar.txt" />
+    </ItemGroup>
 </Project>
